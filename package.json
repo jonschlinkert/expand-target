@@ -1,0 +1,28 @@
+{
+  "name": "expand-target",
+  "description": "Expand target definitions in a declarative configuration.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/jonschlinkert/expand-target",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/expand-target",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/expand-target/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "keywords": []
+}
