@@ -14,7 +14,7 @@ describe('targets', function () {
   describe('constructor', function () {
     it('should set a target `name` when passed as the first arg.', function () {
       var target = new Target('foo', {src: 'a', dest: 'b'});
-      assert.equal(target.target, 'foo');
+      assert.equal(target.name, 'foo');
     });
 
     it('should add a parent property if parent is passed:', function () {
@@ -107,25 +107,6 @@ describe('targets', function () {
     });
   });
 
-  describe('options.extend', function () {
-    it('should extend expanded nodes with target properties:', function () {
-      var target = new Target('lib', {
-        options: {aaa: 'bbb', cwd: 'test/fixtures/'},
-        expand: true,
-        extend: true,
-        files: [
-          {options: {aaa: 'ccc'}, src: '*.js', dest: 'b'},
-          {options: {ddd: 'eee'}, src: '*.txt', dest: 'd'},
-          {cwd: 'faux/', src: '*.txt', dest: 'd', foo: 'bar'},
-        ]
-      }, {task: 'jshint'});
-
-      target.files[0].should.have.property('options');
-      target.files[0].should.have.property('task', 'jshint');
-      target.files[0].should.have.property('target', 'lib');
-    });
-  });
-
   describe('options.expand', function () {
     describe('when expand is true', function () {
       it('should join the `cwd` to expanded `src` paths:', function () {
@@ -173,28 +154,26 @@ describe('targets', function () {
 
   describe('target nodes', function () {
     describe('options.process', function () {
-      it('should resolve templates in config values:', function () {
+      it('should resolve templates in reserved options values:', function () {
         var target = new Target({
           src: '*.txt',
           cwd: '<%= foo %>',
           process: true,
           expand: true,
-          foo: 'test/fixtures'
+          foo: 'arbitrary'
         });
-
-        // console.log(inspect(target))
-        target.options.cwd.should.equal('test/fixtures');
+        target.options.cwd.should.equal('arbitrary');
       });
     });
 
     describe('options.process - target', function () {
-      it('should resolve templates in config values:', function () {
+      it('should resolve templates in arbitrary config values:', function () {
         var target = new Target({
           src: '*.txt',
           cwd: '<%= foo %>',
           process: 'target',
           expand: true,
-          foo: 'test/fixtures',
+          foo: 'arbitrary',
           bar: '<%= options.cwd %>',
           baz: '<%= cwd %>',
         });
@@ -204,13 +183,13 @@ describe('targets', function () {
          */
 
         // on reserved properties that are moved to options
-        target.options.cwd.should.equal('test/fixtures');
+        target.options.cwd.should.equal('arbitrary');
 
         // on templates for reserved properties that are moved to options
-        target.bar.should.equal('test/fixtures');
+        target.bar.should.equal('arbitrary');
 
         // on the `orig` value of reserved properties
-        target.baz.should.equal('test/fixtures');
+        target.baz.should.equal('arbitrary');
       });
     });
   });

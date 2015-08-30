@@ -8,15 +8,17 @@ function stringify(config) {
     indent: '  '
   });
 }
-var targets = [
-  {
-    expand: true,
-    dest: 'dist/',
-    src: '{.*,*.*}'
-  },
-  {
-    src: 'test/fixtures/*.js',
-    dest: 'site/assets/'
+var tasks = [
+  assemble: {
+    site: {
+      expand: true,
+      dest: 'dist/',
+      src: '{.*,*.*}'
+    },
+    docs: {
+      src: 'test/fixtures/*.js',
+      dest: 'site/assets/'
+    }
   },
   {
     flatten: true,
