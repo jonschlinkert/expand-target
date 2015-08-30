@@ -157,7 +157,7 @@ files({src: '*.js', dest: 'dist/', expand: true});
 
 * [expand-config](https://www.npmjs.com/package/expand-config): Expand tasks, targets and options in a declarative configuraiton. | [homepage](https://github.com/jonschlinkert/expand-config)
 * [expand-files](https://www.npmjs.com/package/expand-files): Expand glob patterns in a declarative configuration into src-dest mappings. | [homepage](https://github.com/jonschlinkert/expand-files)
-* [expand-task](https://www.npmjs.com/package/expand-task): Expand task definitions in a declarative configuration. | [homepage](https://github.com/jonschlinkert/expand-task)
+* [expand-task](https://www.npmjs.com/package/expand-task): Expand and normalize task definitions in a declarative configuration. | [homepage](https://github.com/jonschlinkert/expand-task)
 * [files-objects](https://www.npmjs.com/package/files-objects): Expand files objects into src-dest mappings. | [homepage](https://github.com/jonschlinkert/files-objects)
 
 ## Running tests
