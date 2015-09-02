@@ -157,7 +157,6 @@ function expandFiles(target) {
     var opts = config.options;
     var files = [];
 
-
     while (++i < len) {
       var node = clone(other);
 
@@ -179,10 +178,6 @@ function expandFiles(target) {
       // merge `config.files`
       node = merge({}, node, ele);
       files = files.concat(new Files(node));
-
-      if (typeof opts.transform === 'function') {
-        files = opts.transform(files, node);
-      }
     }
     config.files = files;
     return config;
@@ -227,7 +222,12 @@ function toMapping(node, config) {
 
   // extend non-files config properties onto the node
   var nonfiles = omit(config, ['files']);
-  return merge({}, node, nonfiles);
+  var config = merge({}, node, nonfiles);
+
+  if (typeof config.options.transform === 'function') {
+    config = config.options.transform(config);
+  }
+  return config;
 }
 
 /**

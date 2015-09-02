@@ -120,9 +120,9 @@ describe('targets', function () {
 
     it('should use a `cwd` to expand `src` glob patterns:', function () {
       var target = new Target({src: '*.txt', cwd: 'test/fixtures'});
-      target.files[0].src.should.containEql('a.txt');
-      target.files[0].src.should.containEql('b.txt');
-      target.files[0].src.should.containEql('c.txt');
+      target.files[0].src.should.containEql('test/fixtures/a.txt');
+      target.files[0].src.should.containEql('test/fixtures/b.txt');
+      target.files[0].src.should.containEql('test/fixtures/c.txt');
     });
   });
 
@@ -208,6 +208,35 @@ describe('targets', function () {
         // on the `orig` value of reserved properties
         target.baz.should.equal('arbitrary');
       });
+    });
+  });
+
+  describe('options.transform', function () {
+    it('should modify the result with a custom transform function', function () {
+       var actual = new Target('foo', {
+        options: {
+          transform: function (config) {
+            config.pipeline = function(){};
+            return config;
+          }
+        },
+        src: ['*.js']
+      });
+      assert(typeof actual.files[0].pipeline === 'function');
+    });
+
+    it('should work when `expand` is true:', function () {
+       var actual = new Target('foo', {
+        options: {
+          expand: true,
+          transform: function (config) {
+            config.pipeline = function(){};
+            return config;
+          }
+        },
+        files: {'foo/': '*.js'}
+      });
+      assert(typeof actual.files[0].pipeline === 'function');
     });
   });
 });
