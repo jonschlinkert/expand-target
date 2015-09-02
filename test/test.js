@@ -103,6 +103,11 @@ describe('targets', function () {
       assert(Array.isArray(target.files));
     });
 
+    it('should support `files` as an array of strings:', function () {
+      var target = new Target({files: ['*.js']});
+      assert(target.files[0].src.length > 0);
+    });
+
     it('should arrayify the `src` property', function () {
       var a = new Target({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(a.files[0].src));

@@ -120,6 +120,14 @@ function normalizeOpts(name, current) {
 
 function normalizeFiles(config) {
   config.files = utils.arrayify(config.files || []);
+
+  for (var i = 0; i < config.files.length; i++) {
+    var ele = config.files[i];
+    if (typeof ele === 'string') {
+      config.files[i] = {src: ele};
+    }
+  }
+
   if ('src' in config || 'dest' in config) {
     config.files.push(pick(config, ['src', 'dest']));
     delete config.src;
