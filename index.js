@@ -2,6 +2,7 @@
 
 var forIn = require('for-in');
 var expand = require('expand');
+var define = require('define-property');
 var clone = require('clone-deep');
 var pick = require('object.pick');
 var omit = require('object.omit');
@@ -21,39 +22,42 @@ function Target(name, config, parent) {
     name = null;
   }
 
+  if (typeof config !== 'object') {
+    throw new TypeError('expected config to be an object.');
+  }
+
   var root = parent ? (parent.root || parent.orig) : this.orig;
 
   // Inherit `Node`
   Node.call(this, null, parent, root || this);
 
   // clone the original config object on a non-enumerable prop
-  this.define('orig', clone(config || {}));
+  this.define('orig', clone(config));
 
   // define the task name (if exists)
-  if (this.parent && (this.parent.task || this.parent.name)) {
-    this.define('task', this.parent.task || this.parent.name);
+  if (this.parent && (this.parent.task)) {
+    this.define('task', this.parent.task);
   }
 
   // set the target name, or generate an id
   this.define('name', name || utils.nextId('target'));
 
   // normalize the config object
-  this.normalize(config || {});
+  this.normalize(config);
 }
-
 Node.extend(Target);
 
+/**
+ * Normalize files and options
+ */
+
 Target.prototype.normalize = function(config) {
-  config = normalizeOpts('target', this)(config);
   config = normalizeFiles(config);
+  config = normalizeOpts('target', this)(config);
   config = expandFiles(this)(config);
 
   forIn(config, function (val, key) {
-    if (utils.isNode(val, key)) {
-      this.set(key, new Node(val, this));
-    } else {
-      this.set(key, val);
-    }
+    this.set(key, val);
   }, this);
 };
 
@@ -65,6 +69,7 @@ Target.prototype.normalize = function(config) {
 
 function normalizeOpts(name, current) {
   return function(config) {
+    var parent = current.parent || config.parent || {};
     var opts = pick(config, utils.optsKeys);
     config = omit(config, utils.optsKeys);
 
@@ -75,7 +80,9 @@ function normalizeOpts(name, current) {
 
     // resolve templates using the `current` object as context
     var process = config.options.process;
-    if (!process) return config;
+    if (!process || (name === 'target' && process === 'node')) {
+      return config;
+    }
 
     var ctx = {};
 
@@ -89,15 +96,17 @@ function normalizeOpts(name, current) {
     } else if (name === 'node' && process === 'target') {
       config = expand(config, current.orig);
     } else if (name === 'node' && process === 'task') {
-      config = expand(config, current.parent.orig);
+      config = expand(config, parent.orig || parent);
     } else if (name === 'target' && process === 'task') {
-      config = expand(config, current.parent.orig);
+      config = expand(config, parent.orig || parent);
     } else if (process === 'all') {
-      if (name === 'node') {
-        config = expand(config);
+      if (config.files) {
+        config.files = config.files.map(function (file) {
+          return expand(file);
+        });
       }
       config = expand(config, current.orig);
-      config = expand(config, current.parent.orig);
+      config = expand(config, parent.orig || parent);
     }
 
     ctx = merge({}, config, config.options, config.root);
@@ -152,20 +161,20 @@ function normalizeFiles(config) {
 
 function expandFiles(target) {
   return function(config) {
-    var other = omit(config, ['files', 'options']);
     var len = config.files.length, i = -1;
     var opts = config.options;
     var files = [];
 
     while (++i < len) {
-      var node = clone(other);
 
-      if (target.task) node.task = target.task;
-      if (target.name) node.name = target.name;
+      var file = config.files[i];
+      file.options = merge({}, opts, file.options);
+      define(file, 'parent', config);
 
       // merge `config.options`
-      var ele = normalizeOpts('node', target)(config.files[i]);
-      ele.options = merge({}, opts, ele.options);
+      var ele = normalizeOpts('node', config)(file);
+      if (target.task) ele.task = target.task;
+      ele.name = target.name;
 
       // expand 'path-objects': 'files: [{'foo/': 'bar/*.js'}]`
       var mapping = toMapping(ele, config);
@@ -176,9 +185,9 @@ function expandFiles(target) {
       }
 
       // merge `config.files`
-      node = merge({}, node, ele);
-      files = files.concat(new Files(node));
+      files = files.concat(new Files(ele));
     }
+
     config.files = files;
     return config;
   };
@@ -201,17 +210,15 @@ function toMapping(node, config) {
   }
 
   var keys = Object.keys(node);
-  config = config || {};
-
   node.files = utils.arrayify(node.files || []);
-  var omissions = [];
   var opts = node.options;
+  var omissions = [];
 
   keys.forEach(function (key) {
     if (utils.allKeys.indexOf(key) < 0) {
       omissions.push(key);
       var mapping = {src: node[key], dest: key};
-      if (opts) mapping.options = opts;
+      mapping.options = opts;
       node.files.push(mapping);
       delete node[key];
     }
@@ -222,7 +229,7 @@ function toMapping(node, config) {
 
   // extend non-files config properties onto the node
   var nonfiles = omit(config, ['files']);
-  var config = merge({}, node, nonfiles);
+  config = merge({}, node, nonfiles);
 
   if (typeof config.options.transform === 'function') {
     config = config.options.transform(config);

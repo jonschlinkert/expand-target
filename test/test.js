@@ -42,6 +42,17 @@ describe('targets', function () {
       var b = new Target({}, {task: 'assemble'});
       assert.equal(b.task, 'assemble');
     });
+
+    it('should return an instance when `new` is not defined:', function () {
+      var target = Target('foo', {}, {});
+      assert(target instanceof Target);
+    });
+
+    it('should throw an error when config is not an object:', function () {
+      (function () {
+        Target('foo');
+      }).should.throw('expected config to be an object.');
+    });
   });
 
   describe('options', function () {
@@ -118,6 +129,17 @@ describe('targets', function () {
       target.files[0].src.should.containEql('test/fixtures/a.txt');
     });
 
+    it('should set the `task` property on a files object:', function () {
+      var target = new Target({files: {src: 'a', dest: 'b'}}, {task: 'jshint'});
+      assert(target.files[0].task === 'jshint');
+    });
+
+    it('should set the target `name` property on a files object:', function () {
+      var target = new Target('foo', {files: {src: 'a', dest: 'b'}}, {task: 'jshint'});
+      assert(target.files[0].name === 'foo');
+      assert(target.files[0].task === 'jshint');
+    });
+
     it('should use a `cwd` to expand `src` glob patterns:', function () {
       var target = new Target({src: '*.txt', cwd: 'test/fixtures'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
@@ -136,7 +158,10 @@ describe('targets', function () {
       });
 
       it('should create `dest` properties using the src path:', function () {
-        var target = new Target('abc', {src: 'test/fixtures/*.txt', expand: true});
+        var target = new Target('abc', {
+          src: 'test/fixtures/*.txt',
+          expand: true
+        });
         assert(target.files[0].dest === 'test/fixtures/a.txt');
       });
 
@@ -163,8 +188,24 @@ describe('targets', function () {
       });
 
       it('should expand `src-dest` mappings:', function () {
-        var target = new Target({src: 'test/fixtures/*.txt'});
+        var target = new Target({
+          src: 'test/fixtures/*.txt',
+          expand: true
+        });
         target.files[0].src.should.containEql('test/fixtures/a.txt');
+      });
+
+      it('should expand files objects:', function () {
+        var target = new Target({
+          files: {
+            'dest/a.js': ['src/aa.js', 'src/aaa.js'],
+            'dest/b.js': ['src/bb.js', 'src/bbb.js'],
+          }
+        });
+        target.files[0].src.should.eql(['src/aa.js', 'src/aaa.js']);
+        target.files[0].dest.should.equal('dest/a.js');
+        target.files[1].src.should.eql(['src/bb.js', 'src/bbb.js']);
+        target.files[1].dest.should.equal('dest/b.js');
       });
     });
   });
@@ -181,9 +222,59 @@ describe('targets', function () {
         });
         target.options.cwd.should.equal('arbitrary');
       });
-    });
 
-    describe('options.process - target', function () {
+      it('should process in the context of a node:', function () {
+        var task = {foo: 'task'};
+        var target = new Target('jshint', {
+          options: {process: 'node'},
+          foo: 'target',
+          files: [
+            {src: 'test/fixtures/*.txt', foo: '<%= bar %>', bar: 'node'}
+          ],
+        }, task);
+        target.files[0].foo.should.equal('node');
+      });
+
+      it('should process in the context of a target:', function () {
+        var task = {foo: 'task'};
+        var target = new Target('jshint', {
+          options: {process: 'target'},
+          foo: '<%= bar %>',
+          bar: 'target',
+          src: 'test/fixtures/*.txt',
+        }, task);
+        target.foo.should.equal('target');
+      });
+
+      it('should process templates in the context of a task:', function () {
+        var task = {foo: 'task', bar: 'baz'};
+        var target = new Target('jshint', {
+          options: {process: 'task'},
+          foo: '<%= bar %>',
+          src: '<%= foo %>/*.txt',
+        }, task);
+        target.foo.should.equal('baz');
+        assert(target.files[0].src, 'task/*.txt');
+      });
+
+      it('should process in all contexts:', function () {
+        var task = {foo: 'task', bar: 'baz', c: '<%= foo %>'};
+        var target = new Target('jshint', {
+          options: {process: 'all'},
+          a: '<%= b %>',
+          b: '<%= c %>',
+          c: 'd',
+          files: [
+            {src: 'test/fixtures/*.txt', foo: '<%= bar %>', bar: 'node'}
+          ],
+        }, task);
+
+        target.a.should.equal('d');
+        target.b.should.equal('d');
+        target.c.should.equal('d');
+        target.files[0].foo.should.equal('node');
+      });
+
       it('should resolve templates in arbitrary config values:', function () {
         var target = new Target({
           src: '*.txt',
@@ -235,6 +326,20 @@ describe('targets', function () {
           }
         },
         files: {'foo/': '*.js'}
+      });
+      assert(typeof actual.files[0].pipeline === 'function');
+    });
+
+    it('should work with a files array:', function () {
+       var actual = new Target('foo', {
+        options: {
+          expand: true,
+          transform: function (config) {
+            config.pipeline = function(){};
+            return config;
+          }
+        },
+        files: ['*.js']
       });
       assert(typeof actual.files[0].pipeline === 'function');
     });
