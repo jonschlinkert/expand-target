@@ -39,13 +39,15 @@ Write declarative "target" definitions similar in concept to those used by [grun
 **Basic example**
 
 ```js
-target({
+var foo = target('foo');
+foo.config({
   files: {
     'a/': ['*.js'],
     'b/': ['*.js'],
     'c/': ['*.js']
   }
 });
+foo.addFiles(['foo.js'])
 ```
 
 **results in**

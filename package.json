@@ -1,7 +1,7 @@
 {
   "name": "expand-target",
   "description": "Expand target definitions in a declarative configuration.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/jonschlinkert/expand-target",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/expand-target",
@@ -21,18 +21,17 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-methods": "^0.2.1",
+    "base-methods": "^0.2.5",
     "clone-deep": "^0.2.2",
-    "define-property": "^0.2.5",
-    "expand": "^0.1.4",
-    "expand-files": "^0.2.4",
-    "for-in": "^0.1.4",
-    "mixin-deep": "^1.1.3",
-    "object.omit": "^2.0.0",
-    "object.pick": "^1.1.1"
+    "expand": "^0.2.0",
+    "expand-files": "^0.3.1",
+    "for-own": "^0.1.3",
+    "lazy-cache": "^0.2.3",
+    "mixin-deep": "^1.1.3"
   },
   "devDependencies": {
     "extend-shallow": "^2.0.1",
+    "for-in": "^0.1.4",
     "gulp": "^3.9.0",
     "gulp-istanbul": "^0.10.0",
     "gulp-jshint": "^1.11.2",
@@ -42,7 +41,7 @@
     "repeat-string": "^1.5.2",
     "should": "*",
     "stringify-object": "^2.3.0",
-    "to-clipboard": "^0.1.0"
+    "to-clipboard": "^0.2.0"
   },
   "keywords": [
     "config",

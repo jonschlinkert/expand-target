@@ -11,7 +11,7 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('test', ['jshint'], function (cb) {
-  gulp.src('index.js')
+  gulp.src(['index.js', 'lib/*.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())
     .on('finish', function () {
