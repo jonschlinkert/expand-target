@@ -1,6 +1,6 @@
 var inspect = require('stringify-object');
 var merge = require('mixin-deep');
-var Target = require('./target');
+var Target = require('./');
 var utils = require('./lib/utils');
 var forIn = require('for-in');
 
@@ -13,6 +13,7 @@ function stringify(config) {
 }
 var tasks = {
   assemble: {
+    options: {process: true},
     a: {
       foo: 'bar',
       expand: true,
@@ -90,12 +91,20 @@ var tasks = {
 var res = {options: {}, targets: {}};
 function targets(config) {
   forIn(config, function (val, key) {
-    if (key !== 'options' && utils.optsKeys.indexOf(key) === -1) {
-      var target = new Target(key);
+    if (key === 'options') {
+      res.options = val;
+    } else if (utils.optsKeys.indexOf(key) === -1) {
+      var target = new Target();
+      target.use(function (app) {
+        return function (files) {
+          return function(node) {
+        console.log(this._name)
+          }
+        }
+      });
+      target.define('name', key);
       target.config(val);
       res.targets[key] = target;
-    } else {
-      merge(res.options, val);
     }
   });
 }
@@ -105,4 +114,4 @@ targets(tasks.verb);
 
 // var target = new Target('site');
 // target.config(tasks.assemble.site);
-console.log(res.targets)
+// console.log(res)

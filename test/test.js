@@ -27,46 +27,39 @@ function containEql(actual, expected) {
 describe('targets', function () {
   describe('constructor', function () {
     it('should set a target `name` when passed as the first arg.', function () {
-      var config = new Target('foo');
-      assert.equal(config.name, 'foo');
+      var target = new Target();
+      target.define('name', 'foo');
+      assert.equal(target.name, 'foo');
     });
 
 
     it('should return an instance when `new` is not defined:', function () {
-      var target = Target('foo');
+      var target = Target();
+      target.define('name', 'foo');
       assert(target instanceof Target);
-    });
-  });
-
-  describe('target name', function () {
-    it('should throw an error when name is not a string:', function () {
-      var target = new Target({src: 'a', dest: 'b'});
-      assert(target.files[0].dest === 'b');
-    });
-
-    it('should add the target name to the instance', function () {
-      var target = new Target('site');
-      assert(target.name === 'site');
     });
   });
 
   describe('options', function () {
     it('should move `reserved` properties to `options`', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({cwd: 'foo'});
       target.should.have.property('options');
       target.options.should.have.property('cwd');
     });
 
     it('should not move non-reserved properties to `options`', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({foo: 'bar'});
       target.should.have.property('options');
       target.options.should.not.have.property('foo');
     });
 
     it('should extend node options with target options', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({options: {a: 'b'}, src: 'a', foo: 'bar'});
 
       target.should.have.property('options');
@@ -79,7 +72,8 @@ describe('targets', function () {
 
   describe('parent', function () {
     it('should extend config.options with task options.', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.option({foo: 'bar'});
       target.config({src: 'a', dest: 'b'});
 
@@ -88,7 +82,8 @@ describe('targets', function () {
     });
 
     it('should not overwrite existing config.options with task options.', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.option({foo: 'bar'});
       target.config({
         src: 'a',
@@ -112,38 +107,44 @@ describe('targets', function () {
     });
 
     it('should arrayify the `files` property', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files));
     });
 
     it('should support `files` as an array of strings:', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({files: ['*.js']});
       assert(target.files[0].src.length > 0);
     });
 
     it('should arrayify the `src` property', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files[0].src));
     });
 
     it('should expand `src` glob patterns:', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({src: 'test/fixtures/*.txt'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
     });
 
     it('should set the `task` property on a files object:', function () {
-      var target = new Target('jshint');
+      var target = new Target();
+      target.define('name', 'jshint');
       target.set('task', 'jshint');
       target.config({files: {src: 'a', dest: 'b'}});
       assert(target.files[0].task === 'jshint');
     });
 
     it('should set the target `name` property on a files object:', function () {
-      var target = new Target('foo');
+      var target = new Target();
+      target.define('name', 'foo');
       target.set('task', 'jshint');
       target.config({files: {src: 'a', dest: 'b'}});
       assert(target.files[0].name === 'foo');
@@ -151,7 +152,8 @@ describe('targets', function () {
     });
 
     it('should use a `cwd` to expand `src` glob patterns:', function () {
-      var target = new Target('site');
+      var target = new Target();
+      target.define('name', 'site');
       target.config({src: '*.txt', cwd: 'test/fixtures'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
       target.files[0].src.should.containEql('test/fixtures/b.txt');
@@ -162,7 +164,8 @@ describe('targets', function () {
   describe('options.expand', function () {
     describe('when expand is true', function () {
       it('should join the `cwd` to expanded `src` paths:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({src: '*.txt', cwd: 'test/fixtures', expand: true});
         target.files[0].src.should.containEql('test/fixtures/a.txt');
         target.files[1].src.should.containEql('test/fixtures/b.txt');
@@ -170,7 +173,8 @@ describe('targets', function () {
       });
 
       it('should target `dest` properties using the src path:', function () {
-        var target = new Target('abc');
+        var target = new Target();
+        target.define('name', 'abc');
         target.config({
           src: 'test/fixtures/*.txt',
           expand: true
@@ -179,7 +183,8 @@ describe('targets', function () {
       });
 
       it('should expand `src` paths to src-dest mappings:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({src: 'test/fixtures/*.txt', expand: true});
         containEql(target.files, [{
           src: ['test/fixtures/a.txt'],
@@ -191,7 +196,8 @@ describe('targets', function () {
       });
 
       it('should strip cwd from dest mappings:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({src: '*.txt', cwd: 'test/fixtures', expand: true});
         containEql(target.files, [{
           src: ['test/fixtures/a.txt'],
@@ -203,7 +209,8 @@ describe('targets', function () {
       });
 
       it('should expand `src-dest` mappings:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({
           src: 'test/fixtures/*.txt',
           expand: true
@@ -212,7 +219,8 @@ describe('targets', function () {
       });
 
       it('should expand files objects:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({
           cwd: 'test/fixtures',
           files: {
@@ -231,7 +239,8 @@ describe('targets', function () {
   describe('target nodes', function () {
     describe('options.process', function () {
       it('should resolve templates in reserved options values:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({
           src: '*.txt',
           cwd: '<%= foo %>',
@@ -243,7 +252,8 @@ describe('targets', function () {
       });
 
       it('should process in the context of a node:', function () {
-        var target = new Target('jshint');
+        var target = new Target();
+        target.define('name', 'jshint');
         target.set('foo', 'task');
         target.config({
           options: {process: 'node'},
@@ -256,7 +266,8 @@ describe('targets', function () {
       });
 
       it('should process in the context of a target:', function () {
-        var target = new Target('jshint');
+        var target = new Target();
+        target.define('name', 'jshint');
         target.config({
           options: {process: 'target'},
           foo: '<%= bar %>',
@@ -267,7 +278,8 @@ describe('targets', function () {
       });
 
       it('should process templates in the context of a task:', function () {
-        var target = new Target('jshint');
+        var target = new Target();
+        target.define('name', 'jshint');
 
         target.option('parent', {foo: 'task', bar: 'baz'});
         target.config({
@@ -282,7 +294,8 @@ describe('targets', function () {
 
       it('should process in all contexts:', function () {
         var task = {foo: 'task', bar: 'baz', c: '<%= foo %>'};
-        var target = new Target('jshint');
+        var target = new Target();
+        target.define('name', 'jshint');
 
         target.config({
           options: {process: 'all'},
@@ -302,7 +315,8 @@ describe('targets', function () {
       });
 
       it('should resolve templates in arbitrary target values:', function () {
-        var target = new Target('site');
+        var target = new Target();
+        target.define('name', 'site');
         target.config({
           src: '*.txt',
           cwd: '<%= foo %>',
@@ -331,49 +345,47 @@ describe('targets', function () {
 
   describe('options.transform', function () {
     it('should modify the result with a custom transform function', function () {
-      var target = new Target('foo');
+      var target = new Target();
+      target.use(function fn(config) {
+        if (!config.isNode) return fn;
+        config.pipeline = function(){};
+        return config;
+      });
+      target.define('name', 'foo');
       target.config({
-        options: {
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
         src: ['*.js']
       });
       assert(typeof target.files[0].pipeline === 'function');
     });
 
     it('should work when `expand` is true:', function () {
-      var target = new Target('foo');
+      var target = new Target();
+      target.use(function fn(config) {
+        if (!config.isNode) return fn;
+        config.pipeline = function(){};
+        return config;
+      });
+      target.define('name', 'foo');
       target.config({
-        options: {
-          expand: true,
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
+        options: {expand: true},
         files: {'foo/': '*.js'}
       })
       assert(typeof target.files[0].pipeline === 'function');
     });
 
     it('should work with a files array:', function () {
-       var target = new Target('foo');
+       var target = new Target();
+       target.use(function fn(node) {
+         if (!node.isNode) return fn;
+         node.pipeline = function () {};
+         return node;
+       });
+       target.define('name', 'foo');
        target.config({
-        options: {
-          expand: true,
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
+        options: {expand: true},
         files: ['*.js']
       });
       assert(typeof target.files[0].pipeline === 'function');
     });
   });
 });
-
-/* deps: mocha */

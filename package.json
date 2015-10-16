@@ -21,10 +21,13 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-methods": "^0.2.5",
+    "base-methods": "^0.2.13",
+    "base-options": "^0.3.0",
     "clone-deep": "^0.2.2",
-    "expand": "^0.2.0",
-    "expand-files": "^0.3.1",
+    "define-property": "^0.2.5",
+    "expand": "^0.3.1",
+    "expand-files": "^0.3.2",
+    "for-in": "^0.1.4",
     "for-own": "^0.1.3",
     "lazy-cache": "^0.2.3",
     "mixin-deep": "^1.1.3"

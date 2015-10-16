@@ -3,86 +3,101 @@
 var Base = require('base-methods');
 var utils = require('./lib/utils');
 
-function Target(name, options) {
+function Target(options) {
   if (!(this instanceof Target)) {
-    return new Target(name, options);
+    return new Target(options);
   }
-
-  if (typeof name !== 'string') {
-    options = name;
-    name = null;
-  }
-
   Base.call(this);
+  this.is('Target');
+  this.define('plugins', []);
   this.options = options || {};
+  this.use(utils.option);
   this.files = [];
-  this.name = name;
-
-  if (!this.name) {
-    this.config(options);
-    return this;
-  }
 }
 
-Base.extend(Target);
-
-Target.prototype.config = function(config) {
-  var orig = utils.clone(config);
-
-  var fn = utils.files(this.options);
-  config = fn.expand(config);
-
-  var opts = utils.merge({}, this.options, config.options);
-  if (opts.process === 'target' || opts.process === true) {
-    var ctx = utils.merge({}, orig, config);
-    config = this.process(config, ctx);
-  }
-
-  if (opts.process === 'task' || opts.process === 'parent') {
-    config = this.process(config, opts.parent);
-  }
-
-  utils.forOwn(config, function (val, key) {
-    if (key === 'options') {
-      this.option(val);
-    } else if (utils.has(utils.optsKeys, key)) {
-      this.option(key, val);
-    } else if (key === 'files') {
-      val = val.map(function (node) {
-        var nodeOpts = utils.merge({}, opts, node.options);
-        var proc = nodeOpts.process;
-        if (proc === 'node' || proc === true || proc === 'all') {
-          node = this.process(node);
-        }
-        if (this.name) node.name = this.name;
-        if (this.task) node.task = this.task;
-        return node;
-      }.bind(this));
-      this.set(key, val);
-    } else {
-      this.set(key, val);
+Base.extend(Target, {
+  use: function (fn) {
+    utils.is(this, 'Target');
+    var plugin = fn.call(this, this);
+    if (typeof plugin === 'function') {
+      this.plugins.push(plugin);
     }
-  }, this);
+    return this;
+  },
 
-  if (opts.process === 'all') {
-    config = this.process(config, opts.parent);
-    config = this.process(this);
+  run: function (config) {
+    this.plugins.forEach(function (fn) {
+      config.use(fn);
+    });
+    return config;
+  },
+
+  config: function(config) {
+    var orig = utils.clone(config);
+    var target = this;
+
+    var expandFiles = utils.expandFiles(this.options);
+    this.run(expandFiles);
+
+    config = expandFiles.expand(config);
+
+    var opts = utils.merge({}, this.options, config.options);
+    if (opts.process === 'target' || opts.process === true) {
+      var ctx = utils.merge({}, orig, config);
+      config = this.process(config, ctx);
+    }
+
+    if (opts.process === 'task' || opts.process === 'parent') {
+      config = this.process(config, opts.parent);
+    }
+
+    this.use(function fn(files) {
+      if (!files.isFiles) return fn;
+      var options = utils.merge({}, target.options, files.options);
+      var type = options.process;
+      if (type === 'files' || type === true || type === 'all') {
+        files = target.process(files);
+      }
+    });
+
+    this.run(config);
+    utils.forOwn(config, function (val, key) {
+      if (key === 'options') {
+        target.option(val);
+
+      } else if (utils.has(utils.optsKeys, key)) {
+        target.option(key, val);
+
+      } else if (key === 'files') {
+        target[key] = val.map(function (node) {
+          target.extendFiles(node);
+          target.run(node);
+          return node;
+        });
+
+      } else {
+        target.set(key, val);
+      }
+    });
+
+    if (opts.process === 'all') {
+      config = this.process(config, opts.parent);
+      config = this.process(this);
+    }
+    return this;
+  },
+
+  extendFiles: function(config) {
+    if (this.name) utils.define(config, 'name', this.name);
+    if (this.task) utils.define(config, 'task', this.task);
+  },
+
+  process: function(config, context) {
+    return utils.process(this.options)(config, context || config);
   }
-  return this;
-};
+});
 
-Target.prototype.option = function(key, value) {
-  if (typeof key === 'object') {
-    this.visit('option', key);
-  } else {
-    this.set('options.' + key, value);
-  }
-  return this;
-};
 
-Target.prototype.process = function(config, context) {
-  return utils.expand(this.options)(config, context || config);
-};
 
 /**
  * Expose `Target`
