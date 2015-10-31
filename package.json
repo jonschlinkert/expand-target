@@ -1,7 +1,7 @@
 {
   "name": "expand-target",
   "description": "Expand target definitions in a declarative configuration.",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "homepage": "https://github.com/jonschlinkert/expand-target",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/expand-target",
@@ -21,12 +21,13 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-methods": "^0.2.1",
-    "clone-deep": "^0.2.2",
+    "base-methods": "^0.4.0",
+    "clone-deep": "^0.2.3",
     "define-property": "^0.2.5",
-    "expand": "^0.1.4",
-    "expand-files": "^0.2.4",
+    "expand": "^0.3.2",
+    "expand-files": "^0.5.0",
     "for-in": "^0.1.4",
+    "lazy-cache": "^0.2.4",
     "mixin-deep": "^1.1.3",
     "object.omit": "^2.0.0",
     "object.pick": "^1.1.1"
