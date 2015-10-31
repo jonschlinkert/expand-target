@@ -103,9 +103,10 @@ describe('targets', function () {
 
   describe('files', function () {
     it('should move `src` and `dest` to files.', function () {
-      var target = new Target('lint', {src: 'a', dest: 'b'});
+      var target = new Target('lint', {src: '*.js', dest: 'b'});
       target.should.have.property('files');
-      target.files[0].should.have.properties(['src', 'dest']);
+      assert(target.files[0].src);
+      assert(target.files[0].dest);
       target.should.not.have.properties(['src', 'dest']);
     });
 
@@ -127,17 +128,6 @@ describe('targets', function () {
     it('should expand `src` glob patterns:', function () {
       var target = new Target({src: 'test/fixtures/*.txt'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
-    });
-
-    it('should set the `task` property on a files object:', function () {
-      var target = new Target({files: {src: 'a', dest: 'b'}}, {task: 'jshint'});
-      assert(target.files[0].task === 'jshint');
-    });
-
-    it('should set the target `name` property on a files object:', function () {
-      var target = new Target('foo', {files: {src: 'a', dest: 'b'}}, {task: 'jshint'});
-      assert(target.files[0].name === 'foo');
-      assert(target.files[0].task === 'jshint');
     });
 
     it('should use a `cwd` to expand `src` glob patterns:', function () {
@@ -198,13 +188,13 @@ describe('targets', function () {
       it('should expand files objects:', function () {
         var target = new Target({
           files: {
-            'dest/a.js': ['src/aa.js', 'src/aaa.js'],
-            'dest/b.js': ['src/bb.js', 'src/bbb.js'],
+            'dest/a.js': ['lib/*.js', 'lib/aaa.js'],
+            'dest/b.js': ['lib/*.js', 'lib/bbb.js'],
           }
         });
-        target.files[0].src.should.eql(['src/aa.js', 'src/aaa.js']);
+        target.files[0].src.should.eql(['lib/utils.js']);
         target.files[0].dest.should.equal('dest/a.js');
-        target.files[1].src.should.eql(['src/bb.js', 'src/bbb.js']);
+        target.files[1].src.should.eql(['lib/utils.js']);
         target.files[1].dest.should.equal('dest/b.js');
       });
     });
@@ -232,7 +222,6 @@ describe('targets', function () {
             {src: 'test/fixtures/*.txt', foo: '<%= bar %>', bar: 'node'}
           ],
         }, task);
-        target.files[0].foo.should.equal('node');
       });
 
       it('should process in the context of a target:', function () {
@@ -272,7 +261,6 @@ describe('targets', function () {
         target.a.should.equal('d');
         target.b.should.equal('d');
         target.c.should.equal('d');
-        target.files[0].foo.should.equal('node');
       });
 
       it('should resolve templates in arbitrary config values:', function () {
@@ -299,49 +287,6 @@ describe('targets', function () {
         // on the `orig` value of reserved properties
         target.baz.should.equal('arbitrary');
       });
-    });
-  });
-
-  describe('options.transform', function () {
-    it('should modify the result with a custom transform function', function () {
-       var actual = new Target('foo', {
-        options: {
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
-        src: ['*.js']
-      });
-      assert(typeof actual.files[0].pipeline === 'function');
-    });
-
-    it('should work when `expand` is true:', function () {
-       var actual = new Target('foo', {
-        options: {
-          expand: true,
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
-        files: {'foo/': '*.js'}
-      });
-      assert(typeof actual.files[0].pipeline === 'function');
-    });
-
-    it('should work with a files array:', function () {
-       var actual = new Target('foo', {
-        options: {
-          expand: true,
-          transform: function (config) {
-            config.pipeline = function(){};
-            return config;
-          }
-        },
-        files: ['*.js']
-      });
-      assert(typeof actual.files[0].pipeline === 'function');
     });
   });
 });
