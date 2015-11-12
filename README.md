@@ -163,7 +163,9 @@ To see all available contexts, just do the following:
 
 ```js
 target.use(function fn(config) {
-  console.log(config._name);
+  console.log('-----', config._name, '----');
+  console.log(config);
+  console.log('---------------------------');
   return fn;
 });
 ```
