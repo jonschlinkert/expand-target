@@ -21,29 +21,20 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-methods": "^0.4.0",
-    "clone-deep": "^0.2.3",
     "define-property": "^0.2.5",
-    "expand": "^0.3.2",
-    "expand-files": "^0.5.0",
-    "for-in": "^0.1.4",
+    "expand-files": "^0.6.3",
+    "isobject": "^2.0.0",
     "lazy-cache": "^0.2.4",
-    "mixin-deep": "^1.1.3",
-    "object.omit": "^2.0.0",
-    "object.pick": "^1.1.1"
+    "use": "^1.1.2"
   },
   "devDependencies": {
     "extend-shallow": "^2.0.1",
     "gulp": "^3.9.0",
+    "gulp-eslint": "^1.0.0",
     "gulp-istanbul": "^0.10.0",
-    "gulp-jshint": "^1.11.2",
     "gulp-mocha": "^2.1.3",
-    "jshint-stylish": "^2.0.1",
     "mocha": "*",
-    "repeat-string": "^1.5.2",
-    "should": "*",
-    "stringify-object": "^2.3.0",
-    "to-clipboard": "^0.1.0"
+    "should": "*"
   },
   "keywords": [
     "config",
@@ -51,9 +42,9 @@
     "dest",
     "destination",
     "expand",
+    "files",
     "files array",
     "files object",
-    "files",
     "normalize",
     "options",
     "src",
