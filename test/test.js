@@ -1,294 +1,133 @@
 'use strict';
 
+require('mocha');
+require('should');
 var util = require('util');
 var assert = require('assert');
-var should = require('should');
-var utils = require('../lib/utils');
-var Target = require('../');
-
-var inspect = function(obj) {
-  return util.inspect(obj, null, 10);
-};
-
-function containEql(actual, expected) {
-  var len = expected.length;
-  var alen = actual.length;
-  len = Math.min(len, alen);
-
-  while (len--) {
-    var a = actual[len];
-    var b = expected[len];
-
-    a.src.should.eql(b.src);
-    a.dest.should.equal(b.dest);
-  }
-}
+var Target = require('..');
+var target;
 
 describe('targets', function () {
-  describe('constructor', function () {
-    it('should set a target `name` when passed as the first arg.', function () {
-      var target = new Target('foo', {src: 'a', dest: 'b'});
-      assert.equal(target.name, 'foo');
-    });
-
-    it('should add a parent property if parent is passed:', function () {
-      var target = new Target('foo', {}, {});
-      assert.deepEqual(target.parent, {});
-    });
-
-    it('should add a `task` property if passed on parent:', function () {
-      var a = new Target({}, {task: 'jshint'});
-      assert.equal(a.task, 'jshint');
-      var b = new Target({}, {task: 'assemble'});
-      assert.equal(b.task, 'assemble');
-    });
-
-    it('should return an instance when `new` is not defined:', function () {
-      var target = Target('foo', {}, {});
-      assert(target instanceof Target);
-    });
-
-    it('should throw an error when config is not an object:', function () {
-      (function () {
-        Target('foo');
-      }).should.throw('expected config to be an object.');
-    });
-  });
-
-  describe('options', function () {
-    it('should move `reserved` properties to `options`', function () {
-      var target = new Target({cwd: 'foo'});
-      target.should.have.property('options');
-      target.options.should.have.property('cwd');
-    });
-
-    it('should not move non-reserved properties to `options`', function () {
-      var target = new Target({foo: 'bar'});
-      target.should.have.property('options');
-      target.options.should.not.have.property('foo');
-    });
-
-    it('should extend node options with target options', function () {
-      var target = new Target({options: {a: 'b'}, src: 'a', foo: 'bar'});
-
-      target.should.have.property('options');
-      target.options.should.have.property('a');
-      target.should.have.property('files');
-      target.files[0].should.have.property('options');
-      target.files[0].options.should.have.property('a');
-    });
-  });
-
-  describe('parent', function () {
-    it('should extend target.options with task options.', function () {
-      var task = {options: {foo: 'bar'}};
-      var target = new Target({src: 'a', dest: 'b'}, task);
-      target.should.have.property('options');
-      target.options.should.have.property('foo', 'bar');
-    });
-
-    it('should not overwrite existing target.options with task options.', function () {
-      var task = {options: {foo: 'bar'}};
-      var target = new Target({
-        src: 'a',
-        dest: 'b',
-        options: {
-          foo: 'baz'
-        }
-      }, task);
-      target.should.have.property('options');
-      target.options.should.have.property('foo', 'baz');
-    });
+  beforeEach(function() {
+    target = new Target();
   });
 
   describe('files', function () {
-    it('should move `src` and `dest` to files.', function () {
-      var target = new Target('lint', {src: '*.js', dest: 'b'});
-      target.should.have.property('files');
-      assert(target.files[0].src);
-      assert(target.files[0].dest);
-      target.should.not.have.properties(['src', 'dest']);
+    it('should expose a "files" property', function () {
+      target = new Target({src: '*'});
+      assert(target.files);
+      assert(target.files);
+      assert(Array.isArray(target.files));
+    });
+
+    it('should expand files-objects', function () {
+      target = new Target({
+        files: {
+          'a/': ['*.js'],
+          'b/': ['*.js'],
+          'c/': ['*.js']
+        }
+      });
+      assert(target.files.length);
+    });
+
+    it('should use plugins', function () {
+      target.use(function fn(config) {
+        if (!config.node) return fn;
+        config.dest += 'foo/';
+      });
+
+      target.expand({
+        files: {
+          'a/': ['*.js'],
+          'b/': ['*.js'],
+          'c/': ['*.js']
+        }
+      });
+
+      assert(target.files[0].dest === 'a/foo/');
+      assert(target.files[1].dest === 'b/foo/');
+      assert(target.files[2].dest === 'c/foo/');
     });
 
     it('should arrayify the `files` property', function () {
-      var target = new Target({files: {src: 'a', dest: 'b'}});
+      target.expand({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files));
     });
 
     it('should support `files` as an array of strings:', function () {
-      var target = new Target({files: ['*.js']});
+      target.expand({files: ['*.js']});
       assert(target.files[0].src.length > 0);
     });
 
     it('should arrayify the `src` property', function () {
-      var a = new Target({files: {src: 'a', dest: 'b'}});
-      assert(Array.isArray(a.files[0].src));
+      target.expand({files: {src: 'a', dest: 'b'}});
+      assert(Array.isArray(target.files[0].src));
     });
 
     it('should expand `src` glob patterns:', function () {
-      var target = new Target({src: 'test/fixtures/*.txt'});
+      target.expand({src: 'test/fixtures/*.txt'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
     });
 
     it('should use a `cwd` to expand `src` glob patterns:', function () {
-      var target = new Target({src: '*.txt', cwd: 'test/fixtures'});
-      target.files[0].src.should.containEql('test/fixtures/a.txt');
-      target.files[0].src.should.containEql('test/fixtures/b.txt');
-      target.files[0].src.should.containEql('test/fixtures/c.txt');
+      target.expand({src: '*.txt', cwd: 'test/fixtures'});
+      assert.equal(target.files[0].src[0], 'a.txt');
+      assert.equal(target.files[0].src[1], 'b.txt');
+      assert.equal(target.files[0].src[2], 'c.txt');
     });
   });
 
   describe('options.expand', function () {
     describe('when expand is true', function () {
       it('should join the `cwd` to expanded `src` paths:', function () {
-        var target = new Target({src: '*.txt', cwd: 'test/fixtures', expand: true});
-        target.files[0].src.should.containEql('test/fixtures/a.txt');
-        target.files[1].src.should.containEql('test/fixtures/b.txt');
-        target.files[2].src.should.containEql('test/fixtures/c.txt');
+        target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
+        assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
+        assert.equal(target.files[1].src[0], 'test/fixtures/b.txt');
+        assert.equal(target.files[2].src[0], 'test/fixtures/c.txt');
       });
 
       it('should create `dest` properties using the src path:', function () {
-        var target = new Target('abc', {
+        target.expand({
           src: 'test/fixtures/*.txt',
-          expand: true
+          mapDest: true
         });
-        assert(target.files[0].dest === 'test/fixtures/a.txt');
+        assert.equal(target.files[0].dest, 'test/fixtures/a.txt');
       });
 
       it('should expand `src` paths to src-dest mappings:', function () {
-        var target = new Target({src: 'test/fixtures/*.txt', expand: true});
-        containEql(target.files, [{
-          src: ['test/fixtures/a.txt'],
-          dest: 'test/fixtures/a.txt'
-        }, {
-          src: ['test/fixtures/b.txt'],
-          dest: 'test/fixtures/b.txt'
-        }]);
+        target.expand({src: 'test/fixtures/*.txt', mapDest: true});
+        assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
+        assert.equal(target.files[0].dest, 'test/fixtures/a.txt');
       });
 
       it('should strip cwd from dest mappings:', function () {
-        var target = new Target({src: '*.txt', cwd: 'test/fixtures', expand: true});
-        containEql(target.files, [{
-          src: ['test/fixtures/a.txt'],
-          dest: 'a.txt'
-        }, {
-          src: ['test/fixtures/b.txt'],
-          dest: 'b.txt'
-        }]);
+        target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
+        assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
+        assert.equal(target.files[0].dest, 'a.txt');
       });
 
       it('should expand `src-dest` mappings:', function () {
-        var target = new Target({
+        target.expand({
           src: 'test/fixtures/*.txt',
-          expand: true
+          mapDest: true
         });
-        target.files[0].src.should.containEql('test/fixtures/a.txt');
+        assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
       });
 
       it('should expand files objects:', function () {
-        var target = new Target({
+        target.expand({
           files: {
-            'dest/a.js': ['lib/*.js', 'lib/aaa.js'],
-            'dest/b.js': ['lib/*.js', 'lib/bbb.js'],
+            'dest/a.js': ['*.js', 'aaa.js'],
+            'dest/b.js': ['*.js', 'bbb.js'],
           }
         });
-        target.files[0].src.should.eql(['lib/utils.js']);
+
+        target.files[0].src.should.containEql('utils.js');
         target.files[0].dest.should.equal('dest/a.js');
-        target.files[1].src.should.eql(['lib/utils.js']);
+        target.files[1].src.should.containEql('utils.js');
         target.files[1].dest.should.equal('dest/b.js');
       });
     });
   });
-
-  describe('target nodes', function () {
-    describe('options.process', function () {
-      it('should resolve templates in reserved options values:', function () {
-        var target = new Target({
-          src: '*.txt',
-          cwd: '<%= foo %>',
-          process: true,
-          expand: true,
-          foo: 'arbitrary'
-        });
-        target.options.cwd.should.equal('arbitrary');
-      });
-
-      it('should process in the context of a node:', function () {
-        var task = {foo: 'task'};
-        var target = new Target('jshint', {
-          options: {process: 'node'},
-          foo: 'target',
-          files: [
-            {src: 'test/fixtures/*.txt', foo: '<%= bar %>', bar: 'node'}
-          ],
-        }, task);
-      });
-
-      it('should process in the context of a target:', function () {
-        var task = {foo: 'task'};
-        var target = new Target('jshint', {
-          options: {process: 'target'},
-          foo: '<%= bar %>',
-          bar: 'target',
-          src: 'test/fixtures/*.txt',
-        }, task);
-        target.foo.should.equal('target');
-      });
-
-      it('should process templates in the context of a task:', function () {
-        var task = {foo: 'task', bar: 'baz'};
-        var target = new Target('jshint', {
-          options: {process: 'task'},
-          foo: '<%= bar %>',
-          src: '<%= foo %>/*.txt',
-        }, task);
-        target.foo.should.equal('baz');
-        assert(target.files[0].src, 'task/*.txt');
-      });
-
-      it('should process in all contexts:', function () {
-        var task = {foo: 'task', bar: 'baz', c: '<%= foo %>'};
-        var target = new Target('jshint', {
-          options: {process: 'all'},
-          a: '<%= b %>',
-          b: '<%= c %>',
-          c: 'd',
-          files: [
-            {src: 'test/fixtures/*.txt', foo: '<%= bar %>', bar: 'node'}
-          ],
-        }, task);
-
-        target.a.should.equal('d');
-        target.b.should.equal('d');
-        target.c.should.equal('d');
-      });
-
-      it('should resolve templates in arbitrary config values:', function () {
-        var target = new Target({
-          src: '*.txt',
-          cwd: '<%= foo %>',
-          process: 'target',
-          expand: true,
-          foo: 'arbitrary',
-          bar: '<%= options.cwd %>',
-          baz: '<%= cwd %>',
-        });
-
-        /**
-         * should (just) work...
-         */
-
-        // on reserved properties that are moved to options
-        target.options.cwd.should.equal('arbitrary');
-
-        // on templates for reserved properties that are moved to options
-        target.bar.should.equal('arbitrary');
-
-        // on the `orig` value of reserved properties
-        target.baz.should.equal('arbitrary');
-      });
-    });
-  });
 });
-
-/* deps: mocha */
