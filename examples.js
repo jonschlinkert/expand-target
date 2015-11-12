@@ -1,17 +1,14 @@
-var inspect = require('stringify-object');
-var target = require('./');
 
-function stringify(config) {
-  var obj = JSON.parse(JSON.stringify(config));
-  return inspect(obj, {
-    singleQuotes: true,
-    indent: '  '
-  });
-}
-var tasks = [
+var Target = require('./');
+
+var tasks = {
+  options: {
+    cwd: 'test/fixtures'
+  },
+
   assemble: {
     site: {
-      expand: true,
+      mapDest: true,
       dest: 'dist/',
       src: '{.*,*.*}'
     },
@@ -20,22 +17,27 @@ var tasks = [
       dest: 'site/assets/'
     }
   },
-  {
-    flatten: true,
-    expand: true,
+
+  verb: {
+    docs: {
+      flatten: true,
+      mapDest: true,
+      files: [
+        {src: 'test/fixtures/*.txt', dest: 'site/assets/'},
+        {src: ['test/fixtures/*.js', 'test/fixtures/*.txt'], dest: 'site/assets/'}
+      ]
+    }
+  },
+
+  site: {
     files: [
-      {src: 'test/fixtures/*.txt', dest: 'site/assets/'},
-      {src: ['test/fixtures/*.js', 'test/fixtures/*.txt'], dest: 'site/assets/'}
+      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
+      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
+      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
     ]
   },
-  {
-    files: [
-      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
-      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
-      {src: 'test/fixtures/*.js', dest: 'site/assets/'},
-    ]
-  },
-  {
+
+  docs: {
     cwd: 'test/fixtures',
     files: [
       {src: '*.js', dest: 'site/assets/'},
@@ -43,19 +45,26 @@ var tasks = [
       {src: '*.js', dest: 'site/assets/'},
     ]
   },
-  {
+
+  not_a_task: {
     cwd: 'test/fixtures',
-    expand: true,
+    mapDest: true
+  },
+
+  blog: {
+    cwd: 'test/fixtures',
+    mapDest: true,
     files: [
       {src: '*.js', dest: 'site/assets/'},
       {src: '*.js', dest: 'site/assets/'},
       {src: '*.js', dest: 'site/assets/'},
     ]
   },
-  {
+
+  showcase: {
     options: {
       cwd: 'test/fixtures',
-      expand: true,
+      mapDest: true,
     },
     files: [
       {src: '*.js', dest: 'site/assets/'},
@@ -63,19 +72,37 @@ var tasks = [
       {src: '*.js', dest: 'site/assets/'},
     ]
   },
-  {
-    src: '*.txt',
-    expand: true
+
+  microsite: {
+    mapDest: true,
+    src: '*.txt'
   },
-  {
+
+  js: {
     files: {
       'dist/': ['*.js'],
     }
   },
-  {
-    expand: true,
+
+  css: {
+    mapDest: true,
     files: {
-      'dist/': ['*.js'],
+      'dist/': ['*.css'],
     }
   }
-];
+};
+
+/**
+ * TARGET
+ */
+
+var target = new Target();
+target.use(function fn(val)  {
+  console.log(val)
+  return fn;
+});
+
+target.expand({
+  src: 'test/fixtures/*.txt',
+  dest: 'foo'
+});
