@@ -15,6 +15,10 @@ var utils = require('./utils');
  */
 
 function Target(options) {
+  if (!(this instanceof Target)) {
+    return new Target(options);
+  }
+
   utils.define(this, '_name', 'Target');
   use(this);
 
