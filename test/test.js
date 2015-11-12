@@ -2,25 +2,36 @@
 
 require('mocha');
 require('should');
-var util = require('util');
 var assert = require('assert');
 var Target = require('..');
 var target;
 
-describe('targets', function () {
+describe('Target', function() {
+  it('should create an instance of Target', function() {
+    target = new Target({src: '*'});
+    assert(target instanceof Target);
+  });
+
+  it('should instantiate without "new"', function() {
+    target = Target({src: '*'});
+    assert(target instanceof Target);
+  });
+});
+
+describe('targets', function() {
   beforeEach(function() {
     target = new Target();
   });
 
-  describe('files', function () {
-    it('should expose a "files" property', function () {
+  describe('files', function() {
+    it('should expose a "files" property', function() {
       target = new Target({src: '*'});
       assert(target.files);
       assert(target.files);
       assert(Array.isArray(target.files));
     });
 
-    it('should expand files-objects', function () {
+    it('should expand files-objects', function() {
       target = new Target({
         files: {
           'a/': ['*.js'],
@@ -31,7 +42,7 @@ describe('targets', function () {
       assert(target.files.length);
     });
 
-    it('should use plugins', function () {
+    it('should use plugins', function() {
       target.use(function fn(config) {
         if (!config.node) return fn;
         config.dest += 'foo/';
@@ -50,27 +61,27 @@ describe('targets', function () {
       assert(target.files[2].dest === 'c/foo/');
     });
 
-    it('should arrayify the `files` property', function () {
+    it('should arrayify the `files` property', function() {
       target.expand({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files));
     });
 
-    it('should support `files` as an array of strings:', function () {
+    it('should support `files` as an array of strings:', function() {
       target.expand({files: ['*.js']});
       assert(target.files[0].src.length > 0);
     });
 
-    it('should arrayify the `src` property', function () {
+    it('should arrayify the `src` property', function() {
       target.expand({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files[0].src));
     });
 
-    it('should expand `src` glob patterns:', function () {
+    it('should expand `src` glob patterns:', function() {
       target.expand({src: 'test/fixtures/*.txt'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
     });
 
-    it('should use a `cwd` to expand `src` glob patterns:', function () {
+    it('should use a `cwd` to expand `src` glob patterns:', function() {
       target.expand({src: '*.txt', cwd: 'test/fixtures'});
       assert.equal(target.files[0].src[0], 'a.txt');
       assert.equal(target.files[0].src[1], 'b.txt');
@@ -78,16 +89,16 @@ describe('targets', function () {
     });
   });
 
-  describe('options.expand', function () {
-    describe('when expand is true', function () {
-      it('should join the `cwd` to expanded `src` paths:', function () {
+  describe('options.expand', function() {
+    describe('when expand is true', function() {
+      it('should join the `cwd` to expanded `src` paths:', function() {
         target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[1].src[0], 'test/fixtures/b.txt');
         assert.equal(target.files[2].src[0], 'test/fixtures/c.txt');
       });
 
-      it('should create `dest` properties using the src path:', function () {
+      it('should create `dest` properties using the src path:', function() {
         target.expand({
           src: 'test/fixtures/*.txt',
           mapDest: true
@@ -95,19 +106,19 @@ describe('targets', function () {
         assert.equal(target.files[0].dest, 'test/fixtures/a.txt');
       });
 
-      it('should expand `src` paths to src-dest mappings:', function () {
+      it('should expand `src` paths to src-dest mappings:', function() {
         target.expand({src: 'test/fixtures/*.txt', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[0].dest, 'test/fixtures/a.txt');
       });
 
-      it('should strip cwd from dest mappings:', function () {
+      it('should strip cwd from dest mappings:', function() {
         target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[0].dest, 'a.txt');
       });
 
-      it('should expand `src-dest` mappings:', function () {
+      it('should expand `src-dest` mappings:', function() {
         target.expand({
           src: 'test/fixtures/*.txt',
           mapDest: true
@@ -115,11 +126,11 @@ describe('targets', function () {
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
       });
 
-      it('should expand files objects:', function () {
+      it('should expand files objects:', function() {
         target.expand({
           files: {
             'dest/a.js': ['*.js', 'aaa.js'],
-            'dest/b.js': ['*.js', 'bbb.js'],
+            'dest/b.js': ['*.js', 'bbb.js']
           }
         });
 
