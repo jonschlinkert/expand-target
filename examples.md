@@ -15,10 +15,29 @@ target({
 
 ```js
 {
-  'foo/': 'test/fixtures/*.txt',
-  'bar/': 'test/fixtures/*.txt',
   options: {},
-  files: []
+  files: [
+    {
+      options: {},
+      src: [
+        'test/fixtures/a.txt',
+        'test/fixtures/b.txt',
+        'test/fixtures/c.txt',
+        'test/fixtures/d.txt'
+      ],
+      dest: 'foo/'
+    },
+    {
+      options: {},
+      src: [
+        'test/fixtures/a.txt',
+        'test/fixtures/b.txt',
+        'test/fixtures/c.txt',
+        'test/fixtures/d.txt'
+      ],
+      dest: 'bar/'
+    }
+  ]
 }
 ```
 
@@ -28,7 +47,7 @@ and...
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   'foo/': 'test/fixtures/*.txt',
   'bar/': 'test/fixtures/*.txt'
@@ -39,18 +58,55 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
-  'foo/': 'test/fixtures/*.txt',
-  'bar/': 'test/fixtures/*.txt',
-  files: []
+  options: {},
+  files: [
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'foo/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'foo/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'foo/test/fixtures/d.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'bar/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'bar/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'bar/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'bar/test/fixtures/d.txt'
+    }
+  ]
 }
 ```
 
 ## `src` normalization
 
-> attempts to create node when no `src` exists
+> attempts to create a node when no `src` exists
 
 ```js
 target({
@@ -62,9 +118,14 @@ target({
 
 ```js
 {
-  foo: 'bar',
   options: {},
-  files: []
+  files: [
+    {
+      options: {},
+      src: ['bar'],
+      dest: 'foo'
+    }
+  ]
 }
 ```
 
@@ -84,10 +145,9 @@ target({
   options: {},
   files: [
     {
-      target: 'target_004',
-      src: [],
-      dest: 'b',
-      options: {}
+      options: {},
+      src: ['a'],
+      dest: 'b'
     }
   ]
 }
@@ -108,12 +168,14 @@ target({
   options: {},
   files: [
     {
+      options: {},
       src: [
         'test/fixtures/a.txt',
         'test/fixtures/b.txt',
         'test/fixtures/c.txt',
         'test/fixtures/d.txt'
-      ]
+      ],
+      dest: ''
     }
   ]
 }
@@ -135,6 +197,7 @@ target({
   options: {},
   files: [
     {
+      options: {},
       src: [
         'test/fixtures/a.txt',
         'test/fixtures/b.txt',
@@ -153,7 +216,7 @@ target({
 target({
   options: {
     cwd: 'test/fixtures',
-    expand: true
+    mapDest: true
   },
   src: '*.txt',
   dest: 'dist/'
@@ -164,24 +227,33 @@ target({
 
 ```js
 {
-  options: {
-    cwd: 'test/fixtures',
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/a.txt'],
       dest: 'dist/a.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/b.txt'],
       dest: 'dist/b.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/c.txt'],
       dest: 'dist/c.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/d.txt'],
       dest: 'dist/d.txt'
     }
@@ -204,17 +276,19 @@ target({
 
 ```js
 {
-  options: {
-    cwd: 'test/fixtures'
-  },
+  options: {},
   files: [
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: [
         'a.txt',
         'b.txt',
         'c.txt',
         'd.txt'
-      ]
+      ],
+      dest: ''
     }
   ]
 }
@@ -229,7 +303,7 @@ target({
   src: '*.txt',
   options: {
     cwd: 'test/fixtures',
-    expand: true
+    mapDest: true
   }
 });
 ```
@@ -238,24 +312,33 @@ target({
 
 ```js
 {
-  options: {
-    cwd: 'test/fixtures',
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/a.txt'],
       dest: 'a.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/b.txt'],
       dest: 'b.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/c.txt'],
       dest: 'c.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/d.txt'],
       dest: 'd.txt'
     }
@@ -269,7 +352,7 @@ target({
 target({
   src: 'test/fixtures/*.txt',
   options: {
-    expand: true
+    mapDest: true
   }
 });
 ```
@@ -278,23 +361,25 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a.txt'],
       dest: 'test/fixtures/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/b.txt'],
       dest: 'test/fixtures/b.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/c.txt'],
       dest: 'test/fixtures/c.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/d.txt'],
       dest: 'test/fixtures/d.txt'
     }
@@ -307,7 +392,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   src: 'test/fixtures/*.txt'
 });
@@ -317,23 +402,25 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a.txt'],
       dest: 'test/fixtures/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/b.txt'],
       dest: 'test/fixtures/b.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/c.txt'],
       dest: 'test/fixtures/c.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/d.txt'],
       dest: 'test/fixtures/d.txt'
     }
@@ -347,7 +434,7 @@ target({
 target({
   options: {
     cwd: 'test/fixtures/',
-    expand: true
+    mapDest: true
   },
   src: '*.txt'
 });
@@ -357,24 +444,33 @@ target({
 
 ```js
 {
-  options: {
-    cwd: 'test/fixtures/',
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {
+        cwd: 'test/fixtures/'
+      },
       src: ['test/fixtures/a.txt'],
       dest: 'a.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures/'
+      },
       src: ['test/fixtures/b.txt'],
       dest: 'b.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures/'
+      },
       src: ['test/fixtures/c.txt'],
       dest: 'c.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures/'
+      },
       src: ['test/fixtures/d.txt'],
       dest: 'd.txt'
     }
@@ -389,7 +485,7 @@ target({
   src: '*.txt',
   options: {
     cwd: 'test/fixtures',
-    expand: true
+    mapDest: true
   }
 });
 ```
@@ -398,24 +494,33 @@ target({
 
 ```js
 {
-  options: {
-    cwd: 'test/fixtures',
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/a.txt'],
       dest: 'a.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/b.txt'],
       dest: 'b.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/c.txt'],
       dest: 'c.txt'
     },
     {
+      options: {
+        cwd: 'test/fixtures'
+      },
       src: ['test/fixtures/d.txt'],
       dest: 'd.txt'
     }
@@ -430,7 +535,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   'foo/': 'test/fixtures/*.txt',
   'bar/': 'test/fixtures/*.txt'
@@ -441,12 +546,49 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
-  'foo/': 'test/fixtures/*.txt',
-  'bar/': 'test/fixtures/*.txt',
-  files: []
+  options: {},
+  files: [
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'foo/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'foo/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'foo/test/fixtures/d.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'bar/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'bar/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'bar/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'bar/test/fixtures/d.txt'
+    }
+  ]
 }
 ```
 
@@ -455,7 +597,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   'foo/': 'test/fixtures/*.txt',
   'bar/': 'test/fixtures/*.txt'
@@ -466,12 +608,49 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
-  'foo/': 'test/fixtures/*.txt',
-  'bar/': 'test/fixtures/*.txt',
-  files: []
+  options: {},
+  files: [
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'foo/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'foo/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'foo/test/fixtures/d.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'bar/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'bar/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'bar/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'bar/test/fixtures/d.txt'
+    }
+  ]
 }
 ```
 
@@ -479,7 +658,7 @@ target({
 
 ```js
 target({
-  expand: true,
+  mapDest: true,
   'foo/': 'test/fixtures/*.txt',
   'bar/': 'test/fixtures/*.txt'
 });
@@ -489,12 +668,49 @@ target({
 
 ```js
 {
-  'foo/': 'test/fixtures/*.txt',
-  'bar/': 'test/fixtures/*.txt',
-  options: {
-    expand: true
-  },
-  files: []
+  options: {},
+  files: [
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'foo/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'foo/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'foo/test/fixtures/d.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'bar/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'bar/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'bar/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'bar/test/fixtures/d.txt'
+    }
+  ]
 }
 ```
 
@@ -503,7 +719,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   'foo/': [
     'test/fixtures/*.txt'
@@ -518,16 +734,49 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
-  'foo/': [
-    'test/fixtures/*.txt'
-  ],
-  'bar/': [
-    'test/fixtures/*.txt'
-  ],
-  files: []
+  options: {},
+  files: [
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'foo/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'foo/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'foo/test/fixtures/d.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/a.txt'],
+      dest: 'bar/test/fixtures/a.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/b.txt'],
+      dest: 'bar/test/fixtures/b.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/c.txt'],
+      dest: 'bar/test/fixtures/c.txt'
+    },
+    {
+      options: {},
+      src: ['test/fixtures/d.txt'],
+      dest: 'bar/test/fixtures/d.txt'
+    }
+  ]
 }
 ```
 
@@ -538,7 +787,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     flatten: true
   },
   src: 'test/fixtures/a/**/*.txt',
@@ -550,20 +799,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    flatten: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/aaa.txt'
     }
@@ -576,7 +825,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     flatten: false
   },
   src: 'test/fixtures/a/**/*.txt',
@@ -588,20 +837,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    flatten: false
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/test/fixtures/a/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/test/fixtures/a/aa/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/test/fixtures/a/aa/aaa/aaa.txt'
     }
@@ -614,7 +863,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   src: 'test/fixtures/a/**/*.txt',
   dest: 'dest'
@@ -625,19 +874,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/test/fixtures/a/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/test/fixtures/a/aa/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/test/fixtures/a/aa/aaa/aaa.txt'
     }
@@ -652,7 +902,7 @@ target({
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   src: ['test/fixtures/a/**/*.txt'],
   dest: 'dest'
@@ -663,19 +913,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/test/fixtures/a/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/test/fixtures/a/aa/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/test/fixtures/a/aa/aaa/aaa.txt'
     }
@@ -689,7 +940,7 @@ and...
 ```js
 target({
   options: {
-    expand: true
+    mapDest: true
   },
   src: ['test/fixtures/a/**/*.txt'],
   dest: 'dest/'
@@ -700,19 +951,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/test/fixtures/a/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/test/fixtures/a/aa/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/test/fixtures/a/aa/aaa/aaa.txt'
     }
@@ -725,7 +977,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     flatten: true
   },
   src: ['test/fixtures/a/**/*.txt'],
@@ -737,20 +989,20 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    flatten: true
-  },
+  options: {},
   files: [
     {
+      options: {},
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/a.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/aa.txt'
     },
     {
+      options: {},
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/aaa.txt'
     }
@@ -765,8 +1017,9 @@ target({
 ```js
 target({
   options: {
-    expand: true,
-    ext: '.foo'
+    mapDest: true,
+    ext: '.foo',
+    extDot: 'first'
   },
   src: ['test/fixtures/**/foo.*/**'],
   dest: 'dest'
@@ -777,28 +1030,44 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    ext: '.foo'
-  },
+  options: {},
   files: [
     {
+      options: {
+        ext: '.foo'
+      },
       src: ['test/fixtures/foo.bar'],
       dest: 'dest/test/fixtures/foo.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux'],
       dest: 'dest/test/fixtures/foo.bar/baz.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz/x.y.z'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.faz/x.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/foo'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/foo.foo'
     }
@@ -811,8 +1080,9 @@ target({
 ```js
 target({
   options: {
-    expand: true,
-    ext: ''
+    mapDest: true,
+    ext: '.',
+    extDot: 'first'
   },
   src: ['test/fixtures/a/**/*.txt'],
   dest: 'dest'
@@ -823,20 +1093,28 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    ext: ''
-  },
+  options: {},
   files: [
     {
+      options: {
+        ext: ''
+      },
       src: ['test/fixtures/a/a.txt'],
       dest: 'dest/test/fixtures/a/a'
     },
     {
+      options: {
+        ext: '.',
+        extDot: 'first'
+      },
       src: ['test/fixtures/a/aa/aa.txt'],
       dest: 'dest/test/fixtures/a/aa/aa'
     },
     {
+      options: {
+        ext: '.',
+        extDot: 'first'
+      },
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
       dest: 'dest/test/fixtures/a/aa/aaa/aaa'
     }
@@ -851,7 +1129,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     ext: '.foo',
     extDot: 'first'
   },
@@ -864,29 +1142,45 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    ext: '.foo',
-    extDot: 'first'
-  },
+  options: {},
   files: [
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar'],
       dest: 'dest/test/fixtures/foo.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux'],
       dest: 'dest/test/fixtures/foo.bar/baz.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz/x.y.z'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.faz/x.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'first'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/foo'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/foo.foo'
     }
@@ -899,7 +1193,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     ext: '.foo',
     extDot: 'last'
   },
@@ -912,29 +1206,45 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    ext: '.foo',
-    extDot: 'last'
-  },
+  options: {},
   files: [
     {
+      options: {
+        ext: '.foo',
+        extDot: 'last'
+      },
       src: ['test/fixtures/foo.bar'],
       dest: 'dest/test/fixtures/foo.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'last'
+      },
       src: ['test/fixtures/foo.bar/baz.qux'],
       dest: 'dest/test/fixtures/foo.bar/baz.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'last'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'last'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz/x.y.z'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/fez.faz/x.y.foo'
     },
     {
+      options: {
+        ext: '.foo',
+        extDot: 'last'
+      },
       src: ['test/fixtures/foo.bar/baz.qux/foo'],
       dest: 'dest/test/fixtures/foo.bar/baz.qux/foo.foo'
     }
@@ -949,7 +1259,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     cwd: 'a'
   },
   src: ['test/fixtures/**/*.txt'],
@@ -961,19 +1271,15 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    cwd: 'a'
-  },
+  options: {},
   files: [
     {
-      target: 'target_028',
-      src: [],
-      dest: 'dest',
       options: {
-        expand: true,
+        mapDest: true,
         cwd: 'a'
-      }
+      },
+      src: [],
+      dest: 'dest'
     }
   ]
 }
@@ -986,7 +1292,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     flatten: true,
     cwd: 'a',
     rename: function (dest, fp, options) {
@@ -1002,27 +1308,19 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    flatten: true,
-    cwd: 'a',
-    rename: function (dest, fp, options) {
-      return path.join(dest, options.cwd, 'foo', fp);
-    }
-  },
+  options: {},
   files: [
     {
-      target: 'target_029',
-      src: [],
-      dest: 'dest',
       options: {
-        expand: true,
+        mapDest: true,
         flatten: true,
         cwd: 'a',
         rename: function (dest, fp, options) {
           return path.join(dest, options.cwd, 'foo', fp);
         }
-      }
+      },
+      src: [],
+      dest: 'dest'
     }
   ]
 }
@@ -1033,22 +1331,26 @@ target({
 ```js
 target({
   options: {
-    expand: true,
-    filter: 'isFile',
+    mapDest: true,
     permalink: ':dest/:upper(basename)',
+    filter: function (fp) {
+      return fs.statSync(fp).isFile();
+    },
     upper: function (str) {
       return str.toUpperCase();
     },
     rename: function (dest, fp, options) {
-      var pattern = options.permalink;
-      var ctx = merge({}, this, options, {
-        dest: dest
-      });
-      ctx.ext = ctx.extname;
-      return expand(pattern, ctx, {
-        regex: /:([(\w ),]+)/
-      });
-    }
+          var pattern = options.permalink;
+          var ctx = merge({}, this, options, {
+            dest: path.dirname(dest)
+          });
+          ctx.basename = path.basename(fp);
+          ctx.ext = ctx.extname;
+          var fn = expand({
+            regex: /:([(\w ),]+)/
+          });
+          return fn(pattern, ctx);
+        }
   },
   src: ['test/fixtures/**/*'],
   dest: 'foo/bar'
@@ -1059,107 +1361,217 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    filter: 'isFile',
-    permalink: ':dest/:upper(basename)',
-    upper: function (str) {
-      return str.toUpperCase();
-    },
-    rename: function (dest, fp, options) {
-      var pattern = options.permalink;
-      var ctx = merge({}, this, options, {
-        dest: dest
-      });
-      ctx.ext = ctx.extname;
-      return expand(pattern, ctx, {
-        regex: /:([(\w ),]+)/
-      });
-    }
-  },
+  options: {},
   files: [
     {
-      src: [
-        'test/fixtures/a.txt',
-        'test/fixtures/a/a.txt'
-      ],
-      dest: 'foo/bar/A.TXT'
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
+      src: ['test/fixtures/a.txt'],
+      dest: 'foo/bar/test/fixtures/A.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
+      src: ['test/fixtures/a/a.txt'],
+      dest: 'foo/bar/test/fixtures/a/A.TXT'
+    },
+    {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/a/aa/aa.txt'],
-      dest: 'foo/bar/AA.TXT'
+      dest: 'foo/bar/test/fixtures/a/aa/AA.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/a/aa/aaa/aaa.txt'],
-      dest: 'foo/bar/AAA.TXT'
+      dest: 'foo/bar/test/fixtures/a/aa/aaa/AAA.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/b.txt'],
-      dest: 'foo/bar/B.TXT'
+      dest: 'foo/bar/test/fixtures/B.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/b/alpha.js'],
-      dest: 'foo/bar/ALPHA.JS'
+      dest: 'foo/bar/test/fixtures/b/ALPHA.JS'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/b/beta.js'],
-      dest: 'foo/bar/BETA.JS'
+      dest: 'foo/bar/test/fixtures/b/BETA.JS'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/b/gamma.js'],
-      dest: 'foo/bar/GAMMA.JS'
+      dest: 'foo/bar/test/fixtures/b/GAMMA.JS'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/c.txt'],
-      dest: 'foo/bar/C.TXT'
+      dest: 'foo/bar/test/fixtures/C.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/c/apple.coffee'],
-      dest: 'foo/bar/APPLE.COFFEE'
+      dest: 'foo/bar/test/fixtures/c/APPLE.COFFEE'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/c/celery.coffee'],
-      dest: 'foo/bar/CELERY.COFFEE'
+      dest: 'foo/bar/test/fixtures/c/CELERY.COFFEE'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/c/walnut.coffee'],
-      dest: 'foo/bar/WALNUT.COFFEE'
+      dest: 'foo/bar/test/fixtures/c/WALNUT.COFFEE'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/d.txt'],
-      dest: 'foo/bar/D.TXT'
+      dest: 'foo/bar/test/fixtures/D.TXT'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/foo.bar/baz.qux/fez.faz/x.y.z'],
-      dest: 'foo/bar/X.Y.Z'
+      dest: 'foo/bar/test/fixtures/foo.bar/baz.qux/fez.faz/X.Y.Z'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/foo.bar/baz.qux/foo'],
-      dest: 'foo/bar/FOO'
+      dest: 'foo/bar/test/fixtures/foo.bar/baz.qux/FOO'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/one.md'],
-      dest: 'foo/bar/ONE.MD'
+      dest: 'foo/bar/test/fixtures/ONE.MD'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/three.md'],
-      dest: 'foo/bar/THREE.MD'
+      dest: 'foo/bar/test/fixtures/THREE.MD'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/two.md'],
-      dest: 'foo/bar/TWO.MD'
+      dest: 'foo/bar/test/fixtures/TWO.MD'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/x.js'],
-      dest: 'foo/bar/X.JS'
+      dest: 'foo/bar/test/fixtures/X.JS'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/y.js'],
-      dest: 'foo/bar/Y.JS'
+      dest: 'foo/bar/test/fixtures/Y.JS'
     },
     {
+      options: {
+        permalink: ':dest/:upper(basename)',
+        upper: function (str) {
+          return str.toUpperCase();
+        }
+      },
       src: ['test/fixtures/z.js'],
-      dest: 'foo/bar/Z.JS'
+      dest: 'foo/bar/test/fixtures/Z.JS'
     }
   ]
 }
@@ -1170,7 +1582,7 @@ target({
 ```js
 target({
   options: {
-    expand: true,
+    mapDest: true,
     flatten: true,
     cwd: '',
     rename: function (dest, fp) {
@@ -1186,128 +1598,63 @@ target({
 
 ```js
 {
-  options: {
-    expand: true,
-    flatten: true,
-    cwd: '',
-    rename: function (dest, fp) {
-      return path.join(dest, 'all' + path.extname(fp));
-    }
-  },
+  options: {},
   files: [
     {
-      src: [
-        'test/fixtures/a/a.txt',
-        'test/fixtures/a/aa/aa.txt',
-        'test/fixtures/a/aa/aaa/aaa.txt'
-      ],
-      dest: 'dest/all.txt'
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/a/a.txt'],
+      dest: 'dest/a.txt/all.txt'
     },
     {
-      src: [
-        'test/fixtures/a/aa',
-        'test/fixtures/a/aa/aaa'
-      ],
-      dest: 'dest/all'
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/a/aa'],
+      dest: 'dest/aa/all'
     },
     {
-      src: [
-        'test/fixtures/b/alpha.js',
-        'test/fixtures/b/beta.js',
-        'test/fixtures/b/gamma.js'
-      ],
-      dest: 'dest/all.js'
-    }
-  ]
-}
-```
-
-> supports filtering by `fs.lstat` type: `.isDirectory()`
-
-```js
-target({
-  options: {
-    expand: true,
-    flatten: true,
-    filter: 'isDirectory',
-    rename: function (dest, fp) {
-      return path.join(dest, 'all' + path.extname(fp));
-    }
-  },
-  src: ['test/fixtures/{a,b}/**/*'],
-  dest: 'dest'
-});
-```
-
-**results in**
-
-```js
-{
-  options: {
-    expand: true,
-    flatten: true,
-    filter: 'isDirectory',
-    rename: function (dest, fp) {
-      return path.join(dest, 'all' + path.extname(fp));
-    }
-  },
-  files: [
-    {
-      src: [
-        'test/fixtures/a/aa',
-        'test/fixtures/a/aa/aaa'
-      ],
-      dest: 'dest/all'
-    }
-  ]
-}
-```
-
-> supports filtering by `fs.lstat` type: `.isFile()`
-
-```js
-target({
-  options: {
-    expand: true,
-    flatten: true,
-    filter: 'isFile',
-    rename: function (dest, fp) {
-      return path.join(dest, 'all' + path.extname(fp));
-    }
-  },
-  src: ['test/fixtures/{a,b}/**/*'],
-  dest: 'dest'
-});
-```
-
-**results in**
-
-```js
-{
-  options: {
-    expand: true,
-    flatten: true,
-    filter: 'isFile',
-    rename: function (dest, fp) {
-      return path.join(dest, 'all' + path.extname(fp));
-    }
-  },
-  files: [
-    {
-      src: [
-        'test/fixtures/a/a.txt',
-        'test/fixtures/a/aa/aa.txt',
-        'test/fixtures/a/aa/aaa/aaa.txt'
-      ],
-      dest: 'dest/all.txt'
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/a/aa/aa.txt'],
+      dest: 'dest/aa.txt/all.txt'
     },
     {
-      src: [
-        'test/fixtures/b/alpha.js',
-        'test/fixtures/b/beta.js',
-        'test/fixtures/b/gamma.js'
-      ],
-      dest: 'dest/all.js'
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/a/aa/aaa'],
+      dest: 'dest/aaa/all'
+    },
+    {
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/a/aa/aaa/aaa.txt'],
+      dest: 'dest/aaa.txt/all.txt'
+    },
+    {
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/b/alpha.js'],
+      dest: 'dest/alpha.js/all.js'
+    },
+    {
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/b/beta.js'],
+      dest: 'dest/beta.js/all.js'
+    },
+    {
+      options: {
+        cwd: ''
+      },
+      src: ['test/fixtures/b/gamma.js'],
+      dest: 'dest/gamma.js/all.js'
     }
   ]
 }

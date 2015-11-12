@@ -3,7 +3,7 @@ var forIn = require('for-in');
 var extend = require('extend-shallow');
 var inspect = require('stringify-object');
 var configs = require('./configs');
-var target = require('../');
+var Target = require('../');
 
 function stringify(config) {
   return inspect(config, {
@@ -95,13 +95,16 @@ function examples(arr) {
 }
 
 function toMarkdown(config) {
-  // console.log(stringify(target(config)))
+  var orig = extend({}, config);
+  var target = new Target();
+  target.expand(config);
+
   var res = '';
   res += '\n';
   res += '\n';
   res += '```js';
   res += '\n';
-  res += 'target(\'my-target\', ' + stringify(config) + ');';
+  res += 'target('+ stringify(orig) + ');';
   res += '\n';
   res += '```';
   res += '\n';
@@ -111,7 +114,7 @@ function toMarkdown(config) {
   res += '\n';
   res += '```js';
   res += '\n';
-  res += stringify(target(config));
+  res += stringify(target);
   res += '\n';
   res += '```';
   res += '\n';
@@ -128,7 +131,7 @@ function formatEach(configs) {
 }
 
 var res = format(configs);
-// console.log(res.trim());
+console.log(res.trim());
 
 module.exports = function (section, description, config) {
   return format([{

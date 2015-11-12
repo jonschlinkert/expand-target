@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var merge = require('mixin-deep');
 var expand = require('expand');
@@ -12,7 +13,7 @@ module.exports = [{
         'foo/': 'test/fixtures/*.txt',
         'bar/': 'test/fixtures/*.txt'
       }, {
-        options: {expand: true},
+        options: {mapDest: true},
         'foo/': 'test/fixtures/*.txt',
         'bar/': 'test/fixtures/*.txt'
       }]
@@ -46,7 +47,7 @@ module.exports = [{
   }, {
     description: 'expands `src` glob patterns with `dest` and `cwd`:',
     config: {
-      options: {cwd: 'test/fixtures', expand: true},
+      options: {cwd: 'test/fixtures', mapDest: true},
       src: '*.txt',
       dest: 'dist/'
     },
@@ -67,7 +68,7 @@ module.exports = [{
       src: '*.txt',
       options: {
         cwd: 'test/fixtures',
-        expand: true
+        mapDest: true
       }
     }
   }, {
@@ -75,14 +76,14 @@ module.exports = [{
     config: {
       src: 'test/fixtures/*.txt',
       options: {
-        expand: true
+        mapDest: true
       }
     }
   }, {
     description: 'creates `dest` properties using the `src` basename:',
     config: {
       options: {
-        expand: true
+        mapDest: true
       },
       src: 'test/fixtures/*.txt'
     }
@@ -91,7 +92,7 @@ module.exports = [{
     config: {
       options: {
         cwd: 'test/fixtures/',
-        expand: true
+        mapDest: true
       },
       src: '*.txt'
     }
@@ -101,7 +102,7 @@ module.exports = [{
       src: '*.txt',
       options: {
         cwd: 'test/fixtures',
-        expand: true
+        mapDest: true
       }
     }
   }],
@@ -111,7 +112,7 @@ module.exports = [{
     description: 'expands files objects when `src` is a string:',
     config: {
       options: {
-        expand: true
+        mapDest: true
       },
       'foo/': 'test/fixtures/*.txt',
       'bar/': 'test/fixtures/*.txt'
@@ -120,7 +121,7 @@ module.exports = [{
     description: 'expands files objects when `expand` is on options:',
     config: {
       options: {
-        expand: true
+        mapDest: true
       },
       'foo/': 'test/fixtures/*.txt',
       'bar/': 'test/fixtures/*.txt'
@@ -128,7 +129,7 @@ module.exports = [{
   }, {
     description: 'expands files objects when expand is on the root:',
     config: {
-      expand: true,
+      mapDest: true,
       'foo/': 'test/fixtures/*.txt',
       'bar/': 'test/fixtures/*.txt'
     }
@@ -136,7 +137,7 @@ module.exports = [{
     description: 'expands files objects when `src` is an array:',
     config: {
       options: {
-        expand: true
+        mapDest: true
       },
       'foo/': ['test/fixtures/*.txt'],
       'bar/': ['test/fixtures/*.txt']
@@ -148,7 +149,7 @@ module.exports = [{
     description: 'flattens dest paths:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         flatten: true
       },
       src: 'test/fixtures/a/**/*.txt',
@@ -158,7 +159,7 @@ module.exports = [{
     description: 'does not flatten `dest` paths when `flatten` is false',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         flatten: false
       },
       src: 'test/fixtures/a/**/*.txt',
@@ -168,7 +169,7 @@ module.exports = [{
     description: 'does not flatten `dest` paths when `flatten` is undefined:',
     config: {
       options: {
-        expand: true
+        mapDest: true
       },
       src: 'test/fixtures/a/**/*.txt',
       dest: 'dest',
@@ -180,13 +181,13 @@ module.exports = [{
     description: 'uses `dest` with or without trailing slash:',
     config: [{
       options: {
-        expand: true
+        mapDest: true
       },
       src: ['test/fixtures/a/**/*.txt'],
       dest: 'dest'
     }, {
       options: {
-        expand: true
+        mapDest: true
       },
       src: ['test/fixtures/a/**/*.txt'],
       dest: 'dest/'
@@ -195,7 +196,7 @@ module.exports = [{
     description: 'flattens `dest` paths by joining pre-dest to src filepath:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         flatten: true
       },
       src: ['test/fixtures/a/**/*.txt'],
@@ -208,7 +209,7 @@ module.exports = [{
     description: 'uses the specified extension on dest files:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         ext: '.foo'
       },
       src: ['test/fixtures/**/foo.*/**'],
@@ -218,7 +219,7 @@ module.exports = [{
     description: 'uses extension when it is an empty string:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         ext: ''
       },
       src: ['test/fixtures/a/**/*.txt'],
@@ -231,7 +232,7 @@ module.exports = [{
     description: 'when `extDot` is `first`, everything after the first dot in the filename is replaced:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         ext: '.foo',
         extDot: 'first'
       },
@@ -242,7 +243,7 @@ module.exports = [{
     description: 'when `extDot` is `last`, everything after the last dot in the filename is replaced:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         ext: '.foo',
         extDot: 'last'
       },
@@ -256,7 +257,7 @@ module.exports = [{
     description: 'when `cwd` is defined, the cwd is stripped from the filepath before joining to dest:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         cwd: 'a'
       },
       src: ['test/fixtures/**/*.txt'],
@@ -269,7 +270,7 @@ module.exports = [{
     description: 'supports custom rename function:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         flatten: true,
         cwd: 'a',
         rename: function (dest, fp, options) {
@@ -283,21 +284,25 @@ module.exports = [{
     description: 'exposes target properties as `this` to the rename function:',
     config: {
       options: {
-        expand: true,
-        filter: 'isFile',
+        mapDest: true,
         permalink: ':dest/:upper(basename)',
+        filter: function (fp) {
+          return fs.statSync(fp).isFile();
+        },
         upper: function (str) {
           return str.toUpperCase();
         },
         rename: function (dest, fp, options) {
           var pattern = options.permalink;
           var ctx = merge({}, this, options, {
-            dest: dest
+            dest: path.dirname(dest)
           });
+          ctx.basename = path.basename(fp);
           ctx.ext = ctx.extname;
-          return expand(pattern, ctx, {
+          var fn = expand({
             regex: /:([(\w ),]+)/
           });
+          return fn(pattern, ctx);
         }
       },
       src: ['test/fixtures/**/*'],
@@ -307,37 +312,9 @@ module.exports = [{
     description: 'expanded `src` arrays are grouped by dest paths:',
     config: {
       options: {
-        expand: true,
+        mapDest: true,
         flatten: true,
         cwd: '',
-        rename: function (dest, fp) {
-          return path.join(dest, 'all' + path.extname(fp));
-        }
-      },
-      src: ['test/fixtures/{a,b}/**/*'],
-      dest: 'dest'
-    }
-  }, {
-    description: 'supports filtering by `fs.lstat` type: `.isDirectory()`',
-    config: {
-      options: {
-        expand: true,
-        flatten: true,
-        filter: 'isDirectory',
-        rename: function (dest, fp) {
-          return path.join(dest, 'all' + path.extname(fp));
-        }
-      },
-      src: ['test/fixtures/{a,b}/**/*'],
-      dest: 'dest'
-    }
-  }, {
-    description: 'supports filtering by `fs.lstat` type: `.isFile()`',
-    config: {
-      options: {
-        expand: true,
-        flatten: true,
-        filter: 'isFile',
         rename: function (dest, fp) {
           return path.join(dest, 'all' + path.extname(fp));
         }
