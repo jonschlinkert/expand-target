@@ -47,7 +47,7 @@ Target.prototype.addFiles = function(target) {
   config.expand(target);
 
   for (var key in config) {
-    if (!(key in this)) {
+    if (config.hasOwnProperty(key) && !(key in this)) {
       this[key] = config[key];
     }
   }
