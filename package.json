@@ -23,7 +23,7 @@
   "dependencies": {
     "define-property": "^0.2.5",
     "expand-files": "^0.6.3",
-    "isobject": "^2.0.0",
+    "expand-utils": "^0.1.0",
     "lazy-cache": "^0.2.4",
     "use": "^1.1.2"
   },

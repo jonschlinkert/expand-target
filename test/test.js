@@ -48,7 +48,7 @@ describe('targets', function() {
         config.dest += 'foo/';
       });
 
-      target.expand({
+      target.addFiles({
         files: {
           'a/': ['*.js'],
           'b/': ['*.js'],
@@ -62,44 +62,44 @@ describe('targets', function() {
     });
 
     it('should arrayify the `files` property', function() {
-      target.expand({files: {src: 'a', dest: 'b'}});
+      target.addFiles({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files));
     });
 
     it('should support `files` as an array of strings:', function() {
-      target.expand({files: ['*.js']});
+      target.addFiles({files: ['*.js']});
       assert(target.files[0].src.length > 0);
     });
 
     it('should arrayify the `src` property', function() {
-      target.expand({files: {src: 'a', dest: 'b'}});
+      target.addFiles({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files[0].src));
     });
 
     it('should expand `src` glob patterns:', function() {
-      target.expand({src: 'test/fixtures/*.txt'});
+      target.addFiles({src: 'test/fixtures/*.txt'});
       target.files[0].src.should.containEql('test/fixtures/a.txt');
     });
 
     it('should use a `cwd` to expand `src` glob patterns:', function() {
-      target.expand({src: '*.txt', cwd: 'test/fixtures'});
+      target.addFiles({src: '*.txt', cwd: 'test/fixtures'});
       assert.equal(target.files[0].src[0], 'a.txt');
       assert.equal(target.files[0].src[1], 'b.txt');
       assert.equal(target.files[0].src[2], 'c.txt');
     });
   });
 
-  describe('options.expand', function() {
+  describe('options.addFiles', function() {
     describe('when expand is true', function() {
       it('should join the `cwd` to expanded `src` paths:', function() {
-        target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
+        target.addFiles({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[1].src[0], 'test/fixtures/b.txt');
         assert.equal(target.files[2].src[0], 'test/fixtures/c.txt');
       });
 
       it('should create `dest` properties using the src path:', function() {
-        target.expand({
+        target.addFiles({
           src: 'test/fixtures/*.txt',
           mapDest: true
         });
@@ -107,19 +107,19 @@ describe('targets', function() {
       });
 
       it('should expand `src` paths to src-dest mappings:', function() {
-        target.expand({src: 'test/fixtures/*.txt', mapDest: true});
+        target.addFiles({src: 'test/fixtures/*.txt', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[0].dest, 'test/fixtures/a.txt');
       });
 
       it('should strip cwd from dest mappings:', function() {
-        target.expand({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
+        target.addFiles({src: '*.txt', cwd: 'test/fixtures', mapDest: true});
         assert.equal(target.files[0].src[0], 'test/fixtures/a.txt');
         assert.equal(target.files[0].dest, 'a.txt');
       });
 
       it('should expand `src-dest` mappings:', function() {
-        target.expand({
+        target.addFiles({
           src: 'test/fixtures/*.txt',
           mapDest: true
         });
@@ -127,7 +127,7 @@ describe('targets', function() {
       });
 
       it('should expand files objects:', function() {
-        target.expand({
+        target.addFiles({
           files: {
             'dest/a.js': ['*.js', 'aaa.js'],
             'dest/b.js': ['*.js', 'bbb.js']
