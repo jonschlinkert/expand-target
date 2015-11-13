@@ -24,57 +24,14 @@ require = utils;
  * Lazily required module dependencies
  */
 
-require('isobject', 'isObject');
-require('expand-files', 'Expand');
-require('extend-shallow', 'extend');
 require('define-property', 'define');
+require('expand-files', 'Expand');
 
 /**
  * Restore `require`
  */
 
 require = fn;
-
-/**
- * Utils
- */
-
-utils.run = function(parent, key, child) {
-  utils.define(child, 'parent', parent);
-  utils.define(child, 'orig', utils.extend({}, child));
-  utils.define(child, '_name', key);
-  child[key] = true;
-  parent.run(child);
-  delete child[key];
-};
-
-utils.isTask = function(val) {
-  for (var key in val) {
-    if (utils.isTarget(val[key])) {
-      return true;
-    }
-  }
-  return false;
-};
-
-utils.isTarget = function(val) {
-  if (!utils.isObject(val)) {
-    return false;
-  }
-  if (val.hasOwnProperty('options')) {
-    return true;
-  }
-  if (val.hasOwnProperty('files')) {
-    return true;
-  }
-  if (val.hasOwnProperty('src')) {
-    return true;
-  }
-  if (val.hasOwnProperty('dest')) {
-    return true;
-  }
-  return false;
-};
 
 /**
  * Expose `utils` modules

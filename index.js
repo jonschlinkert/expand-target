@@ -1,7 +1,8 @@
 'use strict';
 
+var utils = require('expand-utils');
+var util = require('./utils');
 var use = require('use');
-var utils = require('./utils');
 
 /**
  * Create a new Target with the given `options`
@@ -19,13 +20,14 @@ function Target(options) {
     return new Target(options);
   }
 
-  utils.define(this, '_name', 'Target');
+  util.define(this, '_name', 'Target');
+  util.define(this, 'isTarget', true);
   use(this);
 
   this.options = options || {};
   if (utils.isTarget(options)) {
     this.options = {};
-    this.expand(options);
+    this.addFiles(options);
     return this;
   }
 }
@@ -39,9 +41,9 @@ function Target(options) {
  * @api public
  */
 
-Target.prototype.expand = function(target) {
-  var config = new utils.Expand(this.options);
-  utils.run(this, 'expand', config);
+Target.prototype.addFiles = function(target) {
+  var config = new util.Expand(this.options);
+  utils.run(this, 'files', config);
   config.expand(target);
 
   for (var key in config) {
