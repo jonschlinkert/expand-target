@@ -31,7 +31,7 @@ describe('targets', function() {
       assert(Array.isArray(target.files));
     });
 
-    it('should expand files-objects', function() {
+    it('should support files objects', function() {
       target = new Target({
         files: {
           'a/': ['*.js'],
@@ -42,9 +42,52 @@ describe('targets', function() {
       assert(target.files.length);
     });
 
-    it('should use plugins', function() {
+    it('should support files arrays', function() {
+      target = new Target({
+        files: [
+          {src: ['*.js'], dest: 'a/'},
+          {src: ['*.js'], dest: 'b/'},
+          {src: ['*.js'], dest: 'c/'}
+        ]
+      });
+      assert(target.files.length);
+    });
+
+    it('should support src-dest pairings', function() {
+      target = new Target({
+        src: ['*.js'], 
+        dest: 'a/'
+      });
+      assert(target.files.length);
+    });
+
+    it('should retain any given properties with files arrays', function() {
+      target = new Target({
+        data: {title: 'My Site'},
+        files: [
+          {src: ['*.js'], dest: 'a/'},
+          {src: ['*.js'], dest: 'b/'},
+          {src: ['*.js'], dest: 'c/', data: {title: 'My Blog'}}
+        ]
+      });
+      assert(target.data);
+      assert(target.data.title === 'My Site');
+      assert(target.files[2].data.title === 'My Blog');
+    });
+
+    it('should retain any given properties with src-dest', function() {
+      target = new Target({
+        data: {title: 'My Blog'},
+        src: ['*.js'], 
+        dest: 'a/'
+      });
+      assert(target.data);
+      assert(target.data.title === 'My Blog');
+    });
+
+    it('should support plugins', function() {
       target.use(function fn(config) {
-        if (!config.node) return fn;
+        if (!config.filesNode) return fn;
         config.dest += 'foo/';
       });
 

@@ -7,14 +7,20 @@ var tasks = {
   },
 
   assemble: {
-    site: {
-      mapDest: true,
-      dest: 'dist/',
-      src: '{.*,*.*}'
+    options: {
+      data: { title: 'My Blog' },
+      mapDest: true
     },
-    docs: {
-      src: 'test/fixtures/*.js',
+    site: {
+      src: 'test/fixtures/*.md',
       dest: 'site/assets/'
+    },
+    blog: {
+      data: { title: 'My Site' },
+      files: [
+        {src: 'test/fixtures/*.md', dest: 'site/assets/', data: {title: 'My Blog'}},
+        {src: 'test/fixtures/*.md', dest: 'site/assets/'}
+      ]
     }
   },
 
@@ -97,12 +103,14 @@ var tasks = {
  */
 
 var target = new Target();
-target.use(function fn(val)  {
-  console.log(val)
-  return fn;
+target.use(function plugin(config)  {
+  return function(node) {
+    if (config.data && !node.data) {
+      node.data = config.data;
+    }
+    return plugin;
+  }
 });
 
-target.expand({
-  src: 'test/fixtures/*.txt',
-  dest: 'foo'
-});
+var blog = target.addFiles(tasks.assemble.blog);
+console.log(blog);
