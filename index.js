@@ -51,6 +51,7 @@ Target.prototype.addFiles = function(target) {
       this[key] = config[key];
     }
   }
+  return this;
 };
 
 /**
