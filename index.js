@@ -20,8 +20,7 @@ function Target(options) {
     return new Target(options);
   }
 
-  util.define(this, '_name', 'Target');
-  util.define(this, 'isTarget', true);
+  utils.is(this, 'target');
   use(this);
 
   this.options = options || {};
@@ -43,7 +42,10 @@ function Target(options) {
 
 Target.prototype.addFiles = function(target) {
   var config = new util.Expand(this.options);
-  utils.run(this, 'files', config);
+
+  // run plugins on `config`, then config can
+  // pass plugins down the tree
+  utils.run(this, 'target', config);
   config.expand(target);
 
   for (var key in config) {

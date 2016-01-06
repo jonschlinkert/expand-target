@@ -104,6 +104,12 @@ describe('targets', function() {
       assert(target.files[2].dest === 'c/foo/');
     });
 
+    it('should expose an `is` property on the config', function() {
+      target.addFiles({files: {'a/': ['*.js']}});
+      assert(target.is);
+      assert(target.is === 'target');
+    });
+
     it('should arrayify the `files` property', function() {
       target.addFiles({files: {src: 'a', dest: 'b'}});
       assert(Array.isArray(target.files));
