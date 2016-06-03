@@ -1,8 +1,8 @@
 'use strict';
 
-var utils = require('expand-utils');
-var util = require('./utils');
-var use = require('use');
+var Base = require('base');
+var util = require('expand-utils');
+var utils = require('./utils');
 
 /**
  * Create a new Target with the given `options`
@@ -20,11 +20,15 @@ function Target(options) {
     return new Target(options);
   }
 
-  utils.is(this, 'target');
-  use(this);
+  Base.call(this, {}, options);
+  this.use(utils.plugins());
+  this.is('Target');
 
   this.options = options || {};
-  if (utils.isTarget(options)) {
+  this.define('Expand', this.options.expand || utils.Expand);
+  utils.bubbleEvents(this.Expand, this);
+
+  if (util.isTarget(options)) {
     this.options = {};
     this.addFiles(options);
     return this;
@@ -32,21 +36,32 @@ function Target(options) {
 }
 
 /**
- * Expand src-dest mappings and glob patterns in
- * the given `target` config.
+ * Inherit `Base`
+ */
+
+Base.extend(Target);
+
+/**
+ * Expand src-dest mappings and glob patterns in the given `files` configuration.
  *
- * @param {Object} `target`
- * @return {Object}
+ * ```js
+ * target.addFiles({
+ *   'a/': ['*.js'],
+ *   'b/': ['*.js'],
+ *   'c/': ['*.js']
+ * });
+ * ```
+ * @param {Object} `files`
+ * @return {Object} Instance of `Target` for chaining.
  * @api public
  */
 
-Target.prototype.addFiles = function(target) {
-  var config = new util.Expand(this.options);
+Target.prototype.addFiles = function(files) {
+  var config = new this.Expand(this.options);
 
-  // run plugins on `config`, then config can
-  // pass plugins down the tree
-  utils.run(this, 'target', config);
-  config.expand(target);
+  // run plugins on `config`
+  util.run(this, 'target', config);
+  config.expand(files);
 
   for (var key in config) {
     if (config.hasOwnProperty(key) && !(key in this)) {

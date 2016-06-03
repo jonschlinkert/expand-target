@@ -12,14 +12,20 @@ require = utils;
  * Lazily required module dependencies
  */
 
+require('base-plugins', 'plugins');
 require('define-property', 'define');
 require('expand-files', 'Expand');
-
-/**
- * Restore `require`
- */
-
 require = fn;
+
+utils.bubbleEvents = function(Expand, target) {
+  var emit = Expand.prototype.emit;
+  Expand.prototype.emit = function(key, val) {
+    if (key === 'files') {
+      target.emit.apply(target, arguments);
+      return emit.apply(Expand.prototype, arguments);
+    }
+  };
+};
 
 /**
  * Expose `utils` modules

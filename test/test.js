@@ -6,18 +6,6 @@ var assert = require('assert');
 var Target = require('..');
 var target;
 
-describe('Target', function() {
-  it('should create an instance of Target', function() {
-    target = new Target({src: '*'});
-    assert(target instanceof Target);
-  });
-
-  it('should instantiate without "new"', function() {
-    target = Target({src: '*'});
-    assert(target instanceof Target);
-  });
-});
-
 describe('targets', function() {
   beforeEach(function() {
     target = new Target();
@@ -71,8 +59,8 @@ describe('targets', function() {
         ]
       });
       assert(target.data);
-      assert(target.data.title === 'My Site');
-      assert(target.files[2].data.title === 'My Blog');
+      assert.equal(target.data.title, 'My Site');
+      assert.equal(target.files[2].data.title, 'My Blog');
     });
 
     it('should retain any given properties with src-dest', function() {
@@ -82,12 +70,12 @@ describe('targets', function() {
         dest: 'a/'
       });
       assert(target.data);
-      assert(target.data.title === 'My Blog');
+      assert.equal(target.data.title, 'My Blog');
     });
 
     it('should support plugins', function() {
       target.use(function fn(config) {
-        if (!config.filesNode) return fn;
+        if (!config.isFilesNode) return fn;
         config.dest += 'foo/';
       });
 
@@ -99,15 +87,9 @@ describe('targets', function() {
         }
       });
 
-      assert(target.files[0].dest === 'a/foo/');
-      assert(target.files[1].dest === 'b/foo/');
-      assert(target.files[2].dest === 'c/foo/');
-    });
-
-    it('should expose an `is` property on the config', function() {
-      target.addFiles({files: {'a/': ['*.js']}});
-      assert(target.is);
-      assert(target.is === 'target');
+      assert.equal(target.files[0].dest, 'a/foo/');
+      assert.equal(target.files[1].dest, 'b/foo/');
+      assert.equal(target.files[2].dest, 'c/foo/');
     });
 
     it('should arrayify the `files` property', function() {

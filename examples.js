@@ -1,4 +1,3 @@
-
 var Target = require('./');
 
 var tasks = {
