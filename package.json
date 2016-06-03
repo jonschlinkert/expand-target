@@ -1,7 +1,7 @@
 {
   "name": "expand-target",
   "description": "Expand target definitions in a declarative configuration.",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "homepage": "https://github.com/jonschlinkert/expand-target",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/expand-target",

@@ -26,7 +26,6 @@ function Target(options) {
 
   this.options = options || {};
   this.define('Expand', this.options.expand || utils.Expand);
-  utils.bubbleEvents(this.Expand, this);
 
   if (util.isTarget(options)) {
     this.options = {};
