@@ -60,6 +60,14 @@
     "task"
   ],
   "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
     "related": {
       "list": [
         "expand-config",
@@ -69,15 +77,15 @@
         "files-objects"
       ]
     },
-    "reflinks": {
-      "list": [
-        "grunt",
-        "gulp",
-        "verb"
-      ]
-    },
-    "plugins": [
-      "gulp-format-md"
-    ]
+    "reflinks": [
+      "grunt",
+      "gulp",
+      "expand-files",
+      "globby",
+      "verb"
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }
