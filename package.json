@@ -21,7 +21,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base": "^0.9.0",
+    "base": "^0.11.0",
     "base-plugins": "^0.4.13",
     "define-property": "^0.2.5",
     "expand-files": "^0.8.3",
@@ -78,11 +78,12 @@
       ]
     },
     "reflinks": [
-      "grunt",
-      "gulp",
       "expand-files",
       "globby",
-      "verb"
+      "grunt",
+      "gulp",
+      "verb",
+      "verb-readme-generator"
     ],
     "lint": {
       "reflinks": true
