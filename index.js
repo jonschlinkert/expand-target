@@ -57,6 +57,7 @@ Base.extend(Target);
 
 Target.prototype.addFiles = function(files) {
   var config = new this.Expand(this.options);
+  config.on('files', this.emit.bind(this, 'files'));
 
   // run plugins on `config`
   util.run(this, 'target', config);
