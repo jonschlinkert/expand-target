@@ -26,6 +26,7 @@ function Target(options) {
 
   this.options = options || {};
   this.define('Expand', this.options.expand || utils.Expand);
+  this.on('files', Target.emit.bind(Target, 'files'));
 
   if (util.isTarget(options)) {
     this.options = {};
