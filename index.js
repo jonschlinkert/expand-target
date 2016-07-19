@@ -28,7 +28,7 @@ function Target(options) {
   this.define('Expand', this.options.expand || utils.Expand);
   this.on('files', Target.emit.bind(Target, 'files'));
 
-  if (util.isTarget(options)) {
+  if (Target.isTarget(options)) {
     this.options = {};
     this.addFiles(options);
     return this;
@@ -71,6 +71,12 @@ Target.prototype.addFiles = function(files) {
   }
   return this;
 };
+
+/**
+ * Expose `.isTarget`
+ */
+
+Target.isTarget = util.isTarget;
 
 /**
  * Expose `Target`

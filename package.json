@@ -27,7 +27,7 @@
     "base-plugins": "^0.4.13",
     "define-property": "^0.2.5",
     "expand-files": "^0.8.4",
-    "expand-utils": "^0.2.1",
+    "expand-utils": "^0.2.2",
     "lazy-cache": "^2.0.1"
   },
   "devDependencies": {
